@@ -16,7 +16,7 @@ public class MobHungerManager {
 
     public static void register() {
         // Register a server tick event to monitor player food levels
-        //ServerTickEvents.END_SERVER_TICK.register(MobHungerManager::managePlayerHunger);
+        ServerTickEvents.END_SERVER_TICK.register(MobHungerManager::managePlayerHunger);
     }
 
     /**

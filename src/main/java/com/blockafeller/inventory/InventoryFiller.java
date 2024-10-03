@@ -5,8 +5,12 @@ import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.ability.MobAbilityStickHandler;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.trait.HungerUtils;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -19,6 +23,7 @@ public class InventoryFiller {
 
 
     public static void fillInventoryWithPapers(ServerPlayerEntity player) {
+        HungerUtils.setPlayerHunger(player, 16, 0f);
         // Iterate over each slot in the player's inventory
         for (int i = 0; i < player.getInventory().size(); i++) {
             if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombie")
@@ -48,7 +53,6 @@ public class InventoryFiller {
                     || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:endermite")
                     || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:llama")
                     || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:trader_llama")
-                    || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:witch")
                     || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:evoker")
                     || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:warden")
             ) {
@@ -57,12 +61,10 @@ public class InventoryFiller {
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:enderman")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:ender_dragon")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:ghast")
-                            || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:snow_golem")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:wither")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:endermite")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:llama")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:trader_llama")
-                            || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:witch")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:evoker")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:warden")) {
                         ItemStack itemStack = new ItemStack(Items.STICK);
@@ -76,21 +78,54 @@ public class InventoryFiller {
 // Step 6: Replace the player’s inventory slot with the new custom item stack
                         player.getInventory().setStack(i, itemStack);
                     } else if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:creeper")) {
-                        HungerUtils.setPlayerHunger(player, 19, 0f);
                         ItemStack itemStack = new ItemStack(Items.PUFFERFISH);
 
                         CreeperFoodHandler.addCreeperFoodTag(itemStack);
 
                         // Step 4: Set a custom name for the item (display name)
-                        itemStack.setCustomName(Text.literal("Explode (Eat Food)"));
+                        itemStack.setCustomName(Text.literal("Explode"));
 
 // Step 6: Replace the player’s inventory slot with the new custom item stack
+                        player.getInventory().setStack(i, itemStack);
+                    } else if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:snow_golem")) {
+                        ItemStack itemStack = new ItemStack(Items.SNOWBALL, 64);
                         player.getInventory().setStack(i, itemStack);
                     }
                     continue;
                 }
             }
             ItemStack item;
+            if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:witch")) {
+                if (i == 0) {
+                    player.getInventory().setStack(0, createNamedPotion(Items.POTION, "Healing Potion", Potions.HEALING));
+                    continue;
+                }
+                if (i == 1) {
+                    player.getInventory().setStack(1, createNamedPotion(Items.SPLASH_POTION, "Potion of Weakness", Potions.WEAKNESS));
+                    continue;
+                }
+                if (i == 2) {
+                    player.getInventory().setStack(2, createNamedPotion(Items.SPLASH_POTION, "Potion of Poison", Potions.POISON));
+                    continue;
+                }
+                if (i == 3) {
+                    player.getInventory().setStack(3, createNamedPotion(Items.SPLASH_POTION, "Potion of Harming", Potions.HARMING));
+                    continue;
+                }
+
+                if (i == 4) {
+                    player.getInventory().setStack(4, createNamedPotion(Items.SPLASH_POTION, "Potion of Slowness", Potions.SLOWNESS));
+                    continue;
+                }
+                if (i == 5) {
+                    player.getInventory().setStack(5, createNamedPotion(Items.POTION, "Fire Resistance Potion", Potions.FIRE_RESISTANCE));
+                    continue;
+                }
+                if (i == 6) {
+                    player.getInventory().setStack(6, createNamedPotion(Items.POTION, "Swiftness Potion", Potions.SWIFTNESS));
+                    continue;
+                }
+            }
             // Skip hotbar slots (0-8) and the offhand slot (40)
             if (i == 40) {
                 continue;
@@ -129,5 +164,18 @@ public class InventoryFiller {
 
         // Force the player to select slot 0 (first hotbar slot) as the active slot
         player.getInventory().selectedSlot = 0;
+    }
+
+    private static ItemStack createNamedPotion(Item potionType, String customName, Potion potionEffect) {
+        // Create a new potion stack with the correct type
+        ItemStack potionStack = new ItemStack(potionType);
+
+        // Set the potion type (e.g., Slowness, Weakness, Poison, etc.)
+        PotionUtil.setPotion(potionStack, potionEffect);
+
+        // Set the custom name for display purposes
+        potionStack.setCustomName(Text.literal(customName));
+
+        return potionStack;
     }
 }

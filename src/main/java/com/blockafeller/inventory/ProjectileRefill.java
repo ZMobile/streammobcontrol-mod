@@ -6,9 +6,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.Map;
 
 public class ProjectileRefill {
     public static void refillArrows(ServerPlayerEntity player) {
@@ -54,37 +59,70 @@ public class ProjectileRefill {
     public static void refillPotion(ServerPlayerEntity player) {
         PlayerInventory inventory = player.getInventory();
 
-        // 1. Drop items in slots 1-7 and offhand if not empty
-        for (int slot = 1; slot <= 7; slot++) {
-            if (!inventory.getStack(slot).isEmpty()) {
-                dropItem(player, inventory.getStack(slot));
+        // Define the potions we want to keep
+        Map<String, Item> desiredPotions = Map.of(
+                "Potion of Slowness", Items.SPLASH_POTION,
+                "Potion of Weakness", Items.SPLASH_POTION,
+                "Potion of Poison", Items.SPLASH_POTION,
+                "Potion of Harming", Items.SPLASH_POTION,
+                "Healing Potion", Items.POTION,
+                "Fire Resistance Potion", Items.POTION,
+                "Swiftness Potion", Items.POTION
+        );
+
+        // 1. Drop items in slots 1-7 and offhand if not matching desired potions
+        for (int slot = 0; slot <= 6; slot++) {
+            ItemStack stack = inventory.getStack(slot);
+
+            if (!isDesiredPotion(stack, desiredPotions)) {
+                //dropItem(player, stack);
                 inventory.setStack(slot, ItemStack.EMPTY);
             }
         }
 
-        // Drop the offhand item if not empty
-        if (!player.getOffHandStack().isEmpty()) {
-            player.dropStack(player.getOffHandStack());
+        // Drop the offhand item if it does not match the desired potions
+        if (!isDesiredPotion(player.getOffHandStack(), desiredPotions)) {
+            //player.dropStack(player.getOffHandStack());
             player.setStackInHand(player.getActiveHand(), ItemStack.EMPTY);
         }
 
-        // 2. Refill slots 1-4 with throwable potions
-        inventory.setStack(0, createNamedPotion(Items.SPLASH_POTION, "Potion of Slowness"));
-        inventory.setStack(1, createNamedPotion(Items.SPLASH_POTION, "Potion of Weakness"));
-        inventory.setStack(2, createNamedPotion(Items.SPLASH_POTION, "Potion of Poison"));
-        inventory.setStack(3, createNamedPotion(Items.SPLASH_POTION, "Potion of Slowness"));
+        // 2. Refill slots 1-4 with specific splash potions
+        inventory.setStack(0, createNamedPotion(Items.POTION, "Healing Potion", Potions.HEALING));
+        inventory.setStack(1, createNamedPotion(Items.SPLASH_POTION, "Potion of Weakness", Potions.WEAKNESS));
+        inventory.setStack(2, createNamedPotion(Items.SPLASH_POTION, "Potion of Poison", Potions.POISON));
+        inventory.setStack(3, createNamedPotion(Items.SPLASH_POTION, "Potion of Harming", Potions.HARMING));
 
         // 3. Refill slots 5-7 with other potion types
-        inventory.setStack(4, createNamedPotion(Items.POTION, "Healing Potion"));
-        inventory.setStack(5, createNamedPotion(Items.POTION, "Fire Resistance Potion"));
-        inventory.setStack(6, createNamedPotion(Items.POTION, "Swiftness Potion"));
+        inventory.setStack(4, createNamedPotion(Items.SPLASH_POTION, "Potion of Slowness", Potions.SLOWNESS));
+        inventory.setStack(5, createNamedPotion(Items.POTION, "Fire Resistance Potion", Potions.FIRE_RESISTANCE));
+        inventory.setStack(6, createNamedPotion(Items.POTION, "Swiftness Potion", Potions.SWIFTNESS));
     }
 
-    private static ItemStack createNamedPotion(Item potionType, String customName) {
-        ItemStack potionStack = new ItemStack(potionType, 1);
+    private static boolean isDesiredPotion(ItemStack stack, Map<String, Item> desiredPotions) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+
+        // Check if the item is a potion and if it has the correct custom name
+        Item item = stack.getItem();
+        String customName = stack.hasCustomName() ? stack.getName().getString() : "";
+
+        return desiredPotions.containsKey(customName) && desiredPotions.get(customName).equals(item);
+    }
+
+    private static ItemStack createNamedPotion(Item potionType, String customName, Potion potionEffect) {
+        // Create a new potion stack with the correct type
+        ItemStack potionStack = new ItemStack(potionType);
+
+        // Set the potion type (e.g., Slowness, Weakness, Poison, etc.)
+        PotionUtil.setPotion(potionStack, potionEffect);
+
+        // Set the custom name for display purposes
         potionStack.setCustomName(Text.literal(customName));
+
         return potionStack;
     }
+
 
     public static void refillSnowballs(ServerPlayerEntity player) {
         ItemStack itemStack = new ItemStack(Items.SNOWBALL, 64);

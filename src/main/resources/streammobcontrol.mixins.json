@@ -10,7 +10,6 @@
     "PlayerInventoryMixin",
     "ScreenHandlerMixin",
     "projectile.PersistentProjectileEntityMixin",
-    "projectile.PotionEntityMixin",
     "projectile.SnowballEntityMixin"
   ],
   "injectors": {

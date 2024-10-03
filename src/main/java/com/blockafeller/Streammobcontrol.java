@@ -3,8 +3,10 @@ package com.blockafeller;
 import com.blockafeller.ability.AbilityStickListener;
 import com.blockafeller.ability.CreeperFoodExplosion;
 import com.blockafeller.ability.CreeperFoodHandler;
+import com.blockafeller.ability.PotionHandler;
 import com.blockafeller.command.ControlCommand;
 import com.blockafeller.inventory.DropPreventionHandler;
+import com.blockafeller.trait.MobHungerManager;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -32,9 +34,10 @@ public class Streammobcontrol implements ModInitializer {
 		// Proceed with mild caution.
 		DropPreventionHandler.registerDropPrevention();
 		AbilityStickListener.registerAbilityStickListener();
-		CreeperFoodExplosion.register();
+		//CreeperFoodExplosion.register();
 		CreeperFoodHandler.register();
-		//Registry.register(Registries.ITEM, new Identifier("modid", "ability_stick"), ABILITY_STICK);
+		MobHungerManager.register();
+		//PotionHandler.registerPotionHandler();
 		LOGGER.info("Hello Fabric world!");
 	}
 }

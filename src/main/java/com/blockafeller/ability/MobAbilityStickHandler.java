@@ -65,6 +65,7 @@ public class MobAbilityStickHandler {
 
                 if (ability != null) {
                     // Execute the ability
+                    System.out.println("This got called");
                     ability.onUse(player, PlayerIdentity.getIdentity(player), world);
 
                     // Retrieve the cooldown duration for this ability from IdentityConfig (or use default 20 ticks)

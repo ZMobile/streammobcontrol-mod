@@ -41,6 +41,7 @@ public abstract class ScreenHandlerMixin {
                         || slotIndex == 7
                         || slotIndex == 6
                         || slotIndex == 5) {
+                    System.out.println("Special armor slot interaction detected");
                     if (!(((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombie")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:evoker")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:drowned")
@@ -49,6 +50,7 @@ public abstract class ScreenHandlerMixin {
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:skeleton")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:stray"))
                     ) {
+                        System.out.println("Blocked interaction in special armor slot");
                         ci.cancel();
                     }
                 }
