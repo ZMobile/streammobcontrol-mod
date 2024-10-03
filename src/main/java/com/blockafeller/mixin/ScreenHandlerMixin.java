@@ -1,6 +1,6 @@
 package com.blockafeller.mixin;
 
-import com.blockafeller.constraints.InventoryFiller;
+import com.blockafeller.inventory.InventoryFiller;
 import com.blockafeller.extension.PlayerExtension;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

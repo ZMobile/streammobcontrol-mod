@@ -1,6 +1,6 @@
 package com.blockafeller.command;
 
-import com.blockafeller.constraints.InventoryFiller;
+import com.blockafeller.inventory.InventoryFiller;
 import com.blockafeller.extension.PlayerExtension;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.CommandRegistryAccess;

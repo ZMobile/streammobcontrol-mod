@@ -4,7 +4,7 @@ import com.blockafeller.ability.AbilityStickListener;
 import com.blockafeller.ability.CreeperFoodExplosion;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.command.ControlCommand;
-import com.blockafeller.constraints.DropPreventionHandler;
+import com.blockafeller.inventory.DropPreventionHandler;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;

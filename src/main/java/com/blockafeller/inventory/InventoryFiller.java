@@ -1,15 +1,12 @@
-package com.blockafeller.constraints;
+package com.blockafeller.inventory;
 
 
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.ability.MobAbilityStickHandler;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.trait.HungerUtils;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;

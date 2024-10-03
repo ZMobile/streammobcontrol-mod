@@ -1,4 +1,4 @@
-package com.blockafeller.constraints;
+package com.blockafeller.inventory;
 
 import com.blockafeller.extension.PlayerExtension;
 import dev.architectury.event.EventResult;
