@@ -55,7 +55,9 @@ public class PlayerEntityMixin implements PlayerExtension {
 
     @Inject(method = "dropItem*", at = @At("HEAD"), cancellable = true)
     private void preventItemDrop(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
-        if (!stack.isEmpty() && (stack.getItem() == Items.PAPER || stack.getItem() == Items.ARROW || AbilityStickListener.isAbilityStick(stack)) && stack.getName().getString().startsWith("Do not interact") && this.inhabiting) {
+        if (!stack.isEmpty()
+                 && this.inhabiting
+                && (((stack.getItem() == Items.PAPER || stack.getItem() == Items.ARROW || AbilityStickListener.isAbilityStick(stack)) && stack.getName().getString().startsWith("Do not interact")) || (stack.getItem() == Items.COMPASS && stack.getItem().getName().getString().startsWith("Leave Morph")))) {
             InventoryFiller.fillInventoryWithPapers((ServerPlayerEntity) (Object) this);
             System.out.println("Blocked tripwire hook drop");
             cir.setReturnValue(null); // Prevent dropping tripwire hooks

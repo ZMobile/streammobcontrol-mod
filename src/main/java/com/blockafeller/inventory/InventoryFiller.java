@@ -4,7 +4,8 @@ package com.blockafeller.inventory;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.ability.MobAbilityStickHandler;
 import com.blockafeller.extension.PlayerExtension;
-import com.blockafeller.trait.HungerUtils;
+import com.blockafeller.morph.MorphUtil;
+import com.blockafeller.trait.hunger.HungerUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -23,9 +24,14 @@ public class InventoryFiller {
 
 
     public static void fillInventoryWithPapers(ServerPlayerEntity player) {
-        HungerUtils.setPlayerHunger(player, 16, 0f);
         // Iterate over each slot in the player's inventory
         for (int i = 0; i < player.getInventory().size(); i++) {
+            if (i == 8) {
+                ItemStack itemStack = MorphUtil.createReverseMorphKey();
+                itemStack.setCustomName(Text.literal("Leave Morph and Return to Lobby  "));
+                player.getInventory().setStack(i, itemStack);
+                continue;
+            }
             if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombie")
                     || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombified_piglin")
                     || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:evoker")

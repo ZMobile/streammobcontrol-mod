@@ -87,4 +87,18 @@ public abstract class PlayerInventoryMixin {
         player.getItemCooldownManager().set(Items.POTION, cooldown);
         player.getItemCooldownManager().set(Items.LINGERING_POTION, cooldown);
     }
+
+    @Inject(method = "offerOrDrop", at = @At("HEAD"))
+    private void onPickupItem(ItemStack stack, CallbackInfo ci) {
+        // Mark the item stack as picked up by adding an NBT tag
+        PlayerEntity player = ((PlayerInventory) (Object) this).player;
+        if (((PlayerExtension)player).isInhabiting()) {
+            markAsPickedUp(stack);
+        }
+    }
+
+    private static void markAsPickedUp(ItemStack stack) {
+        // Add the "picked_up" NBT tag to the stack
+        stack.getOrCreateNbt().putBoolean("picked_up", true);
+    }
 }

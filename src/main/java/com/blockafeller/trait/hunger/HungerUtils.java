@@ -1,4 +1,4 @@
-package com.blockafeller.trait;
+package com.blockafeller.trait.hunger;
 
 import net.minecraft.entity.player.PlayerEntity;
 

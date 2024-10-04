@@ -1,8 +1,7 @@
-package com.blockafeller.trait;
+package com.blockafeller.trait.hunger;
 
 import com.blockafeller.extension.PlayerExtension;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 
