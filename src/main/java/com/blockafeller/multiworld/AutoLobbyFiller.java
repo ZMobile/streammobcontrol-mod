@@ -2,6 +2,9 @@ package com.blockafeller.multiworld;
 
 import com.blockafeller.ability.CreeperFoodExplosion;
 import com.blockafeller.extension.PlayerExtension;
+import com.blockafeller.morph.MorphService;
+import com.blockafeller.morph.MorphUtil;
+import com.blockafeller.util.StreamerUtil;
 import me.isaiah.multiworld.command.TpCommand;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,9 +40,9 @@ public class AutoLobbyFiller {
 
             for (ServerPlayerEntity player : players) {
                 // Check if the player meets the teleportation criteria
-                if (!isStreamer(player) && !isSpectator(player) && !isInhabitingMob(player) && !isInStreamLobby(player)) {
+                if (!StreamerUtil.isStreamer(player) && !isSpectator(player) && !isInhabitingMob(player) && !isInStreamLobby(player)) {
                     player.changeGameMode(GameMode.ADVENTURE);
-                    teleportToLobby(server, player);
+                    MorphService.returnPlayerToLobby(player);
                 }
             }
         }
@@ -50,17 +53,6 @@ public class AutoLobbyFiller {
         // Compare to the target world ID
         return "stream:lobby".equals(currentWorldId);
     }
-
-        /**
-         * Check if a player is a streamer.
-         */
-        private static boolean isStreamer(ServerPlayerEntity player) {
-            // Check if the player is part of the "streamers" team
-            Scoreboard scoreboard = player.getScoreboard();
-            Team team = scoreboard.getPlayerTeam(player.getEntityName());
-
-            return team != null && team.getName().equals("streamers");
-        }
 
     /**
          * Check if the player is in Spectator mode.
@@ -75,16 +67,5 @@ public class AutoLobbyFiller {
          */
         private static boolean isInhabitingMob(PlayerEntity player) {
             return player instanceof PlayerExtension && ((PlayerExtension) player).isInhabiting();
-        }
-
-        /**
-         * Teleport the player to the stream lobby using /mw tp command.
-         */
-        private static void teleportToLobby(MinecraftServer minecraftServer, ServerPlayerEntity player) {
-            // Execute the command /mw tp <player> stream:lobby
-            String playerName = player.getEntityName();
-            //String command = String.format("mw tp %s stream:lobby", playerName);
-
-            TpCommand.run(minecraftServer, player, new String[]{playerName, "stream:lobby"});
         }
     }

@@ -1,5 +1,6 @@
 package com.blockafeller.command;
 
+import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -51,7 +52,7 @@ public class StreamerCommands {
                             boolean hasStreamers = false;
 
                             for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
-                                if (isStreamer(player)) {
+                                if (StreamerUtil.isStreamer(player)) {
                                     streamerList.append(player.getEntityName()).append(" ");
                                     hasStreamers = true;
                                 }
@@ -93,15 +94,5 @@ public class StreamerCommands {
         if (streamerTeam != null) {
             scoreboard.removePlayerFromTeam(player.getEntityName(), streamerTeam);
         }
-    }
-
-    /**
-     * Checks if a player is in the "streamers" team.
-     */
-    private static boolean isStreamer(ServerPlayerEntity player) {
-        Scoreboard scoreboard = player.getScoreboard();
-        Team streamerTeam = scoreboard.getTeam("streamers");
-
-        return streamerTeam != null && streamerTeam.getPlayerList().contains(player.getEntityName());
     }
 }

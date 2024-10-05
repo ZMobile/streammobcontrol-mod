@@ -8,6 +8,7 @@ import com.blockafeller.command.multiworld.HeadlessCreateCommand;
 import com.blockafeller.command.multiworld.HeadlessGameruleCommand;
 import com.blockafeller.inventory.DropPreventionHandler;
 import com.blockafeller.morph.MorphEventHandler;
+import com.blockafeller.morph.MorphService;
 import com.blockafeller.multiworld.AutoLobbyFiller;
 import com.blockafeller.time.PlayerTimeBossBarTracker;
 import com.blockafeller.time.PlayerTimeDataManager;
@@ -16,13 +17,17 @@ import com.blockafeller.trait.damage.MobDamageManager;
 import com.blockafeller.trait.hunger.MobHungerManager;
 import com.blockafeller.trait.loot.CustomDeathDrops;
 import com.blockafeller.trait.loot.ItemDropRemover;
+import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.ParseResults;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +55,10 @@ public class Streammobcontrol implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+			// Perform your custom logic when a player respawns
+			onPlayerRespawn(newPlayer);
+		});
 		/*updateServerPropertiesEarly();
 
 		ServerLifecycleEvents.SERVER_STARTING.register(this::setupCustomLobbyWorld);*/
@@ -84,6 +93,13 @@ public class Streammobcontrol implements ModInitializer {
 
 		AutoLobbyFiller.registerRepeatingTask();
 		LOGGER.info("Hello Fabric world!");
+	}
+
+	// Event handler method
+	private void onPlayerRespawn(ServerPlayerEntity player) {
+		if (!StreamerUtil.isStreamer(player)) {
+			MorphService.returnPlayerToLobby(player);
+		}
 	}
 
 	/**
