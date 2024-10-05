@@ -2,11 +2,9 @@ package com.blockafeller;
 
 import com.blockafeller.ability.AbilityPacketOverride;
 import com.blockafeller.ability.AbilityStickListener;
-import com.blockafeller.ability.ChatSuppressor;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.command.*;
 import com.blockafeller.config.ConfigManager;
-import com.blockafeller.config.ModConfig;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.DropPreventionHandler;
 import com.blockafeller.morph.MorphEventHandler;
@@ -101,6 +99,8 @@ public class Streammobcontrol implements ModInitializer {
 			TimeCommands.register(dispatcher);
 			StreamerCommands.register(dispatcher);
 
+			RunCommand.register(dispatcher);
+
 			KickCycleCommand.register(dispatcher);
 		});
 		//ServerLifecycleEvents.SERVER_STARTING.register(this::setupCustomLobbyWorld);
@@ -123,8 +123,6 @@ public class Streammobcontrol implements ModInitializer {
 
 		AbilityPacketOverride.register();
 		ItemDropRemover.register();
-
-		ChatSuppressor.register();
 		LOGGER.info("Hello Fabric world!");
 	}
 

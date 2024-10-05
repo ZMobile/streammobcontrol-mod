@@ -2,7 +2,11 @@ package com.blockafeller.util;
 
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class StreamerUtil {
     /**
