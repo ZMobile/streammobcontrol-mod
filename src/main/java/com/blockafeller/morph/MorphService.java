@@ -2,16 +2,19 @@ package com.blockafeller.morph;
 
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.InventoryFiller;
+import com.blockafeller.time.PlayerTimeData;
+import com.blockafeller.time.PlayerTimeDataManager;
 import com.blockafeller.trait.hunger.HungerUtils;
 import draylar.identity.api.PlayerIdentity;
 import draylar.identity.api.variant.IdentityType;
-import me.isaiah.multiworld.command.TpCommand;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
@@ -101,31 +104,46 @@ public class MorphService {
     }
 
     public static void beginSpectating(ServerPlayerEntity player) {
+        System.out.println("Beginning spectating for player: " + player.getEntityName());
         String playerName = player.getEntityName();
-
-        TpCommand.run(player.getServer(), player, new String[]{playerName, "minecarft:overworld"});
-        ((PlayerExtension) player).setInhabiting(false);
-        ((PlayerExtension) player).setInhabitedMobType(null);
+        player.changeGameMode(GameMode.SPECTATOR);
+        //TpCommand.run(player.getServer(), player, new String[]{playerName, "minecarft:overworld"});
         // Step 2: Clear the player’s inventory
         player.getInventory().clear();
     }
 
-    public static void returnPlayerToLobby(ServerPlayerEntity player) {
-        // Step 1: Teleport the player to the lobby
+    public static void returnPlayerToLobby(MinecraftServer server, ServerPlayerEntity player) {
+        System.out.println("Returning player to lobby: " + player.getEntityName());
+        // Step 1: Teleport the player to the lobby+
         //player.teleport(0, 100, 0);
+        player.changeGameMode(GameMode.SPECTATOR);
+        PlayerTimeData timeManager = PlayerTimeDataManager.getPlayerTimeData(player.getUuid());
+
+        if (timeManager == null) {
+            timeManager = PlayerTimeDataManager.getOrCreatePlayerTimeData(player.getUuid(), server);
+        }
+        timeManager.setSpectatorTime(180);
+        timeManager.setTotalSpectatorTime(180);
         String playerName = player.getEntityName();
         //String command = String.format("mw tp %s stream:lobby", playerName);
 
-        TpCommand.run(player.getServer(), player, new String[]{playerName, "stream:lobby"});
+        //TpCommand.run(player.getServer(), player, new String[]{playerName, "stream:lobby"});
         ((PlayerExtension) player).setInhabiting(false);
         ((PlayerExtension) player).setInhabitedMobType(null);
+        ServerCommandSource source = server.getCommandSource().withLevel(4).withSilent();
+
+        // Execute the command
+        String command = "/identity unequip " + playerName;
+
+        server.getCommandManager().executeWithPrefix(source, command);
+        //PlayerIdentity.updateIdentity(player, null, null);
         // Step 2: Clear the player’s inventory
         player.getInventory().clear();
 
         // Step 3: Reset the player’s game mode
-        player.changeGameMode(GameMode.ADVENTURE);
+        player.changeGameMode(GameMode.SPECTATOR);
 
-        player.getInventory().setStack(0, MorphUtil.createSpectateKey());
+        //player.getInventory().setStack(0, MorphUtil.createSpectateKey());
         // Step 4: Reset the player’s health
         player.setHealth(20);
     }

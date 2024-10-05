@@ -50,11 +50,11 @@ public class PlayerTimeBossBarTracker {
             } else if (timeManager.getMobTime() > 0) {
                 // Switch to mob time when spectator time runs out
                 long mobTimeToTransfer = Math.min(timeManager.getMobTime(), 30);
-                updateBossBar(bossBar, "Transferred " + mobTimeToTransfer + " seconds to Spectator Time.", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
+                updateBossBar(bossBar, "Transferred " + mobTimeToTransfer + " seconds from Mob Time to Spectator Time.", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
                 showBossBar(bossBar, player); // Ensure boss bar is visible
             } else {
                 // Both times have run out, switch to lobby or default state
-                player.changeGameMode(GameMode.SURVIVAL); // Switch back to survival or lobby mode
+                //player.changeGameMode(GameMode.SURVIVAL); // Switch back to survival or lobby mode
                 hideBossBar(bossBar, player); // Hide the boss bar
             }
         } else if (isPlayerMorphed(player)) { // Custom condition to check if the player is morphed

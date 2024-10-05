@@ -5,7 +5,6 @@ import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.morph.MorphService;
 import com.blockafeller.morph.MorphUtil;
 import com.blockafeller.util.StreamerUtil;
-import me.isaiah.multiworld.command.TpCommand;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Scoreboard;
@@ -14,10 +13,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class AutoLobbyFiller {
@@ -38,21 +39,18 @@ public class AutoLobbyFiller {
             // Get all online players on the server
             List<ServerPlayerEntity> players = server.getPlayerManager().getPlayerList();
 
-            for (ServerPlayerEntity player : players) {
-                // Check if the player meets the teleportation criteria
-                if (!StreamerUtil.isStreamer(player) && !isSpectator(player) && !isInhabitingMob(player) && !isInStreamLobby(player)) {
-                    player.changeGameMode(GameMode.ADVENTURE);
-                    MorphService.returnPlayerToLobby(player);
+            /*try {
+                for (ServerPlayerEntity player : players) {
+                    // Check if the player meets the teleportation criteria
+                    if (!StreamerUtil.isStreamer(player) && !isSpectator(player) && !isInhabitingMob(player)) {
+                        System.out.println("Teleporting to lobby 1");
+                        player.networkHandler.disconnect(Text.literal("Non-streamer detected outside of designated parameters. Please rejoin and try again ."));
+                    }
                 }
-            }
+            } catch (ConcurrentModificationException e) {
+                e.printStackTrace();
+            }*/
         }
-
-    private static boolean isInStreamLobby(ServerPlayerEntity player) {
-        // Get the player's current world ID
-        String currentWorldId = player.getWorld().getRegistryKey().getValue().toString();
-        // Compare to the target world ID
-        return "stream:lobby".equals(currentWorldId);
-    }
 
     /**
          * Check if the player is in Spectator mode.

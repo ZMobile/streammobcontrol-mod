@@ -51,9 +51,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation files('lib/Multiworld-Fabric-1.20.1.jar')
-	include("xyz.nucleoid:fantasy:0.4.11+1.20-rc1")
-	modImplementation("xyz.nucleoid:fantasy:0.4.11+1.20-rc1")
+	//modImplementation files('lib/Multiworld-Fabric-1.20.1.jar')
+	/*include("xyz.nucleoid:fantasy:0.4.11+1.20-rc1")
+	modImplementation("xyz.nucleoid:fantasy:0.4.11+1.20-rc1")*/
 
 	modApi "dev.architectury:architectury-fabric:${project.architectury_version}"
 

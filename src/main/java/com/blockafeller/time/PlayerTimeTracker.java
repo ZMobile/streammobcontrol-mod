@@ -52,10 +52,12 @@ public class PlayerTimeTracker {
                 long mobTimeToTransfer = Math.min(timeManager.getMobTime(), 30);
                 timeManager.decrementMobTime(mobTimeToTransfer);
                 timeManager.setSpectatorTime(mobTimeToTransfer);
-                //player.sendMessage(Text.literal("Transferred " + mobTimeToTransfer + " seconds from Mob Time to Spectator Time."), true);
+                player.sendMessage(Text.literal("Transferred " + mobTimeToTransfer + " seconds from Mob Time to Spectator Time."), true);
                 //displayActionBar(player, "Transferred " + mobTimeToTransfer + " seconds to Spectator Time.");
             } else {
-                MorphService.returnPlayerToLobby(player);
+                System.out.println("Teleporting to lobby 1");
+                player.networkHandler.disconnect(Text.literal("Kick on timeout is assigned in order to cycle players. Please rejoin to try again."));
+                //MorphService.returnPlayerToLobby(player);
             }
         } else if (isPlayerMorphed(player)) { // Custom condition to check if the player is morphed
             // Decrement mob time
@@ -64,12 +66,14 @@ public class PlayerTimeTracker {
                 //player.sendMessage(Text.literal("Mob Time Remaining: " + timeManager.getMobTime() + " seconds"), true);
                 //displayActionBar(player, "Mob Time Remaining: " + timeManager.getMobTime() + "s");
             } else {
+                MorphService.reverseMorph(player);
                 // Mob time ran out, switch back to lobby or spectator
                 // Switch back to survival or spectator mode
                 //player.sendMessage(Text.literal("Your mob time has expired!"), true);
                 //displayActionBar(player, "Your mob time has expired!");
                 // Optionally teleport to lobby or perform other actions
-                MorphService.returnPlayerToLobby(player);
+                System.out.println("Teleporting to lobby 4");
+                player.networkHandler.disconnect(Text.literal("Kick on timeout is assigned in order to cycle players. Please rejoin to try again."));
             }
         }
     }

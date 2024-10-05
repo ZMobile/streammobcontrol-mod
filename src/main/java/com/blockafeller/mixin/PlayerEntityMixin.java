@@ -55,7 +55,7 @@ public class PlayerEntityMixin implements PlayerExtension {
     }
 
     @Inject(method = "dropItem*", at = @At("HEAD"), cancellable = true)
-    private void preventItemDrop(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
+    private void preventItemDrop(ItemStack stack, boolean throwRandomly, CallbackInfoReturnable<ItemEntity> cir) {
         if (!stack.isEmpty()
                  && this.inhabiting
                 && (((stack.getItem() == Items.PAPER || stack.getItem() == Items.ARROW || AbilityStickListener.isAbilityStick(stack)) && stack.getName().getString().startsWith("Do not interact")) || (stack.getItem() == Items.COMPASS && stack.getItem().getName().getString().startsWith("Leave Morph")))) {
@@ -89,7 +89,7 @@ public class PlayerEntityMixin implements PlayerExtension {
         }
     }
 
-    @Inject(method = "playSound(Lnet/minecraft/sound/SoundEvent;FF)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "playSound*", at = @At("HEAD"), cancellable = true)
     private void preventEatingSoundAsCreeper(SoundEvent sound, float volume, float pitch, CallbackInfo ci) {
         if (this.inhabiting && this.inhabitedMobType.toString().equals("minecraft:creeper") && sound == SoundEvents.ENTITY_GENERIC_EAT) {
             ci.cancel();

@@ -4,13 +4,13 @@ import com.blockafeller.ability.AbilityPacketOverride;
 import com.blockafeller.ability.AbilityStickListener;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.command.*;
-import com.blockafeller.command.multiworld.HeadlessCreateCommand;
-import com.blockafeller.command.multiworld.HeadlessGameruleCommand;
+import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.DropPreventionHandler;
 import com.blockafeller.morph.MorphEventHandler;
 import com.blockafeller.morph.MorphService;
 import com.blockafeller.multiworld.AutoLobbyFiller;
 import com.blockafeller.time.PlayerTimeBossBarTracker;
+import com.blockafeller.time.PlayerTimeData;
 import com.blockafeller.time.PlayerTimeDataManager;
 import com.blockafeller.time.PlayerTimeTracker;
 import com.blockafeller.trait.damage.MobDamageManager;
@@ -23,12 +23,15 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +60,31 @@ public class Streammobcontrol implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-			// Perform your custom logic when a player respawns
 			onPlayerRespawn(newPlayer);
 		});
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			ServerPlayerEntity player = handler.getPlayer();
-			onPlayerRespawn(player);
+			onPlayerJoin(server, player);
+		});
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+			ServerPlayerEntity player = handler.getPlayer();
+			MorphService.reverseMorph(player);
+		});
+
+		// Register the event listener
+		UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
+			if (world.isClient()) {
+				return ActionResult.PASS;
+			}
+
+			// Check if the block is a door
+			if (((PlayerExtension)player).isInhabiting()) {
+				// Check if the player is in the disallowed list
+					//player.sendMessage(new LiteralText("You are not allowed to open this door!"), true);
+				return ActionResult.FAIL;
+			}
+
+			return ActionResult.PASS;
 		});
 		/*updateServerPropertiesEarly();
 
@@ -71,7 +93,7 @@ public class Streammobcontrol implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			ControlCommand.register(dispatcher, registryAccess);
-			MorphKeyCommands.register(dispatcher, registryAccess);
+			//MorphKeyCommands.register(dispatcher, registryAccess);
 			TimeCommands.register(dispatcher);
 			StreamerCommands.registerStreamerCommand(dispatcher);
 		});
@@ -103,19 +125,31 @@ public class Streammobcontrol implements ModInitializer {
 	// Event handler method
 	private void onPlayerRespawn(ServerPlayerEntity player) {
 		if (!StreamerUtil.isStreamer(player)) {
-			MorphService.returnPlayerToLobby(player);
+			System.out.println("Teleporting to lobby 2");
+			//MorphService.returnPlayerToLobby(player);
+			player.networkHandler.disconnect(Text.literal("Kick on death is assigned in order to cycle players. Please rejoin to try again."));
 		}
 	}
+
+	// Event handler method
+	private void onPlayerJoin(MinecraftServer server, ServerPlayerEntity player) {
+
+		if (!StreamerUtil.isStreamer(player)) {
+			System.out.println("Teleporting to lobby 2");
+			MorphService.returnPlayerToLobby(server, player);
+		}
+	}
+
 
 	/**
 	 * Sets up the custom lobby world if it doesn't already exist in the server's root directory.
 	 */
 	private void setupCustomLobbyWorld(MinecraftServer server) {
-		HeadlessCreateCommand.run(server, new String[]{"create", "stream:lobby", "NORMAL"});
+		//HeadlessCreateCommand.run(server, new String[]{"create", "stream:lobby", "NORMAL"});
 		//HeadlessTpCommand.run(server, "stream:lobby", new String[]{"gamerule", "fallDamage", "false"});
-		HeadlessGameruleCommand.run(server, "stream:lobby", new String[]{"gamerule", "fallDamage", "false"});
-		HeadlessGameruleCommand.run(server, "stream:lobby", new String[]{"gamerule", "doMobSpawning", "false"});
-		HeadlessGameruleCommand.run(server, "stream:lobby", new String[]{"gamerule", "doDaylightCycle", "false"});
+		//HeadlessGameruleCommand.run(server, "stream:lobby", new String[]{"gamerule", "fallDamage", "false"});
+		//HeadlessGameruleCommand.run(server, "stream:lobby", new String[]{"gamerule", "doMobSpawning", "false"});
+		//HeadlessGameruleCommand.run(server, "stream:lobby", new String[]{"gamerule", "doDaylightCycle", "false"});
 		/*// Get the path to the server's root directory
 		String gradleProjectRoot = System.getProperty("user.dir");
 		File gradleProjectRootParent = new File(gradleProjectRoot).getParentFile();
