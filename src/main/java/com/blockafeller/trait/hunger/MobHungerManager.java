@@ -49,11 +49,11 @@ public class MobHungerManager {
             } else {
                 // Remove the player from the tracking map if they are no longer morphed
                 lastFoodLevels.remove(player);
-                if (WorldByIdQuery.isPlayerInWorld(player, "stream:lobby")) {
+                /*if (WorldByIdQuery.isPlayerInWorld(player, "stream:lobby")) {
                     if (player.getHungerManager().getFoodLevel() < 20) {
                         player.getHungerManager().setFoodLevel(20);
                     }
-                }
+                }*/
             }
         });
     }

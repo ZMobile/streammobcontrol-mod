@@ -8,7 +8,10 @@
     "LivingEntityMixin",
     "PlayerEntityMixin",
     "PlayerInventoryMixin",
+    "PlayerManagerMixin",
     "ScreenHandlerMixin",
+    "ServerPlayerEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
     "projectile.PersistentProjectileEntityMixin",
     "projectile.SnowballEntityMixin"
   ],
