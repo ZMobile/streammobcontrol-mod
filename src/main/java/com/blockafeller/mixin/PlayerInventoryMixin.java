@@ -34,7 +34,7 @@ public abstract class PlayerInventoryMixin {
                 //ci.cancel(); // Cancel direct modification of the slot
             } else if ((stack.getItem() == Items.PAPER && stack.getItem().getName().getString().startsWith("Do not interact"))
                     || (player.getInventory().getStack(slot).getItem() == Items.PAPER && player.getInventory().getStack(slot).getName().getString().startsWith("Do not interact"))) {
-                System.out.println("Blocked tripwire hook modification in inventory");
+                System.out.println("Blocked tripwire hook modification in inventory: " + stack);
                 ci.cancel(); // Cancel direct modification of the slot
             }
         }
@@ -99,6 +99,9 @@ public abstract class PlayerInventoryMixin {
 
     private static void markAsPickedUp(ItemStack stack) {
         // Add the "picked_up" NBT tag to the stack
+        if (stack.getItem().equals(Items.CLOCK) && stack.getItem().getName().getString().startsWith("Leave Morph")) {
+            return;
+        }
         stack.getOrCreateNbt().putBoolean("picked_up", true);
     }
 }

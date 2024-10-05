@@ -45,12 +45,12 @@ public class PlayerTimeBossBarTracker {
         // Check if the player is in spectator mode or morphed
         if (player.interactionManager.getGameMode() == GameMode.SPECTATOR) {
             if (timeManager.getSpectatorTime() > 0) {
-                updateBossBar(bossBar, "Spectator Time Remaining: " + timeManager.getSpectatorTime() + "s", timeManager.getSpectatorTime() / 60.0f);
+                updateBossBar(bossBar, "Spectator Time Remaining: " + timeManager.getSpectatorTime() + "s", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
                 showBossBar(bossBar, player); // Ensure boss bar is visible
             } else if (timeManager.getMobTime() > 0) {
                 // Switch to mob time when spectator time runs out
                 long mobTimeToTransfer = Math.min(timeManager.getMobTime(), 30);
-                updateBossBar(bossBar, "Transferred " + mobTimeToTransfer + " seconds to Spectator Time.", timeManager.getSpectatorTime() / 60.0f);
+                updateBossBar(bossBar, "Transferred " + mobTimeToTransfer + " seconds to Spectator Time.", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
                 showBossBar(bossBar, player); // Ensure boss bar is visible
             } else {
                 // Both times have run out, switch to lobby or default state
@@ -59,7 +59,7 @@ public class PlayerTimeBossBarTracker {
             }
         } else if (isPlayerMorphed(player)) { // Custom condition to check if the player is morphed
             if (timeManager.getMobTime() > 0) {
-                updateBossBar(bossBar, "Mob Time Remaining: " + timeManager.getMobTime() + "s", timeManager.getMobTime() / 300.0f); // Assuming 5 min max
+                updateBossBar(bossBar, "Mob Time Remaining: " + timeManager.getMobTime() + "s", (float) timeManager.getMobTime() / timeManager.getTotalMobTime());
                 showBossBar(bossBar, player); // Ensure boss bar is visible
             } else {
                 ((PlayerExtension) player).setInhabiting(false); // Clear morph status

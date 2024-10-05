@@ -8,6 +8,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.*;
 import net.minecraft.nbt.NbtCompound;
@@ -30,11 +31,14 @@ public class CustomDeathDrops {
     }
 
     private static void handleCustomDrops(ServerPlayerEntity player, DamageSource damageSource) {
+        System.out.println("Item in slot 8: " + player.getInventory().getStack(8));
+        System.out.println("Was picked up: " + wasPickedUp(player.getInventory().getStack(8)));
         // Step 1: Drop picked-up items first (if any)
         dropPickedUpItems(player);
 
         // Step 2: Clear the player's inventory to reset drops
         player.getInventory().clear();
+        player.currentScreenHandler.sendContentUpdates(); // Explicitly sync the inventory here
 
         // Step 3: Identify the appropriate loot table based on morph state
         String lootTableId = getMobLootTableId(player);
@@ -89,6 +93,7 @@ public class CustomDeathDrops {
         for (int i = 0; i < player.getInventory().size(); i++) {
             ItemStack stack = player.getInventory().getStack(i);
             if (!stack.isEmpty() && wasPickedUp(stack)) {
+                System.out.println("Dropping picked-up item: " + stack);
                 player.dropStack(stack);
             }
         }
@@ -110,7 +115,10 @@ public class CustomDeathDrops {
 
     private static boolean wasPickedUp(ItemStack stack) {
         // Check if the stack has the "picked_up" NBT tag
-        return stack.hasNbt() && stack.getNbt().getBoolean("picked_up");
+        System.out.println("Checking if item was picked up: " + stack);
+        boolean pickedUp = stack.hasNbt() && stack.getNbt().getBoolean("picked_up");
+        System.out.println("Item was picked up: " + pickedUp);
+        return pickedUp;
     }
 
     // Utility method to mark an item as picked up

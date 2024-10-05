@@ -40,6 +40,7 @@ public class PlayerEntityMixin implements PlayerExtension {
 
     @Override
     public void setInhabiting(boolean value) {
+        System.out.println("Setting inhabiting to " + value);
         this.inhabiting = value;
     }
 

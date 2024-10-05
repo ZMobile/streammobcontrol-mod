@@ -71,8 +71,8 @@ public class CreeperFoodHandler {
         server.getPlayerManager().getPlayerList().forEach(player -> {
             if (isCreeper(player)) {
                 // Keep the hunger level constant at 18
-                if (player.getHungerManager().getFoodLevel() < 18) {
-                    player.getHungerManager().setFoodLevel(18);
+                if (player.getHungerManager().getFoodLevel() < 10) {
+                    player.getHungerManager().setFoodLevel(10);
                 }
             }
         });

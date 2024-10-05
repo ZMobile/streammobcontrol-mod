@@ -1,6 +1,7 @@
 package com.blockafeller.trait.hunger;
 
 import com.blockafeller.extension.PlayerExtension;
+import com.blockafeller.util.WorldByIdQuery;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -28,16 +29,17 @@ public class MobHungerManager {
                 int currentFoodLevel = player.getHungerManager().getFoodLevel();
 
                 // If the player has no tracked food level yet, initialize it
-                if (!lastFoodLevels.containsKey(player)) {
+                /*if (!lastFoodLevels.containsKey(player)) {
                     lastFoodLevels.put(player, currentFoodLevel);
                 }
 
                 // Get the last stable food level
-                int lastStableLevel = lastFoodLevels.get(player);
+                int lastStableLevel = lastFoodLevels.get(player);*/
+                int lastStableLevel = 10;
 
                 // If the food level has gone down and the player is not eating, restore it
                 if (currentFoodLevel < lastStableLevel && !player.isUsingItem()) {
-                    player.getHungerManager().setFoodLevel(lastStableLevel);
+                    player.getHungerManager().setFoodLevel(10);
                 }
 
                 // Update the tracked stable food level if the player is eating (food level increases)
@@ -47,6 +49,11 @@ public class MobHungerManager {
             } else {
                 // Remove the player from the tracking map if they are no longer morphed
                 lastFoodLevels.remove(player);
+                if (WorldByIdQuery.isPlayerInWorld(player, "stream:lobby")) {
+                    if (player.getHungerManager().getFoodLevel() < 20) {
+                        player.getHungerManager().setFoodLevel(20);
+                    }
+                }
             }
         });
     }

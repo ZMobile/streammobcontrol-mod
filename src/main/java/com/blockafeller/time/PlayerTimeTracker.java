@@ -1,6 +1,7 @@
 package com.blockafeller.time;
 
 import com.blockafeller.extension.PlayerExtension;
+import com.blockafeller.morph.MorphService;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -54,11 +55,7 @@ public class PlayerTimeTracker {
                 //player.sendMessage(Text.literal("Transferred " + mobTimeToTransfer + " seconds from Mob Time to Spectator Time."), true);
                 //displayActionBar(player, "Transferred " + mobTimeToTransfer + " seconds to Spectator Time.");
             } else {
-                // Both times have run out, switch to lobby or default state
-                player.changeGameMode(GameMode.SURVIVAL); // Switch back to survival or lobby mode
-                //player.sendMessage(Text.literal("Your spectator and mob time have expired!"), true);
-                //displayActionBar(player, "Your spectator and mob time have expired!");
-                // Optionally teleport to lobby or remove from morph state
+                MorphService.returnPlayerToLobby(player);
             }
         } else if (isPlayerMorphed(player)) { // Custom condition to check if the player is morphed
             // Decrement mob time
@@ -68,11 +65,11 @@ public class PlayerTimeTracker {
                 //displayActionBar(player, "Mob Time Remaining: " + timeManager.getMobTime() + "s");
             } else {
                 // Mob time ran out, switch back to lobby or spectator
-                ((PlayerExtension) player).setInhabiting(false); // Clear morph status
-                player.changeGameMode(GameMode.SURVIVAL); // Switch back to survival or spectator mode
+                // Switch back to survival or spectator mode
                 //player.sendMessage(Text.literal("Your mob time has expired!"), true);
                 //displayActionBar(player, "Your mob time has expired!");
                 // Optionally teleport to lobby or perform other actions
+                MorphService.returnPlayerToLobby(player);
             }
         }
     }

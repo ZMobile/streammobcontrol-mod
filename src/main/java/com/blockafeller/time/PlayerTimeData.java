@@ -6,6 +6,8 @@ import net.minecraft.world.PersistentState;
 public class PlayerTimeData extends PersistentState {
     private long mobTime;       // Mob time in seconds
     private long spectatorTime; // Spectator time in seconds
+    private long totalMobTime;
+    private long totalSpectatorTime;
 
     // Constructor to initialize default values
     public PlayerTimeData() {
@@ -56,5 +58,21 @@ public class PlayerTimeData extends PersistentState {
     public void decrementSpectatorTime(long seconds) {
         this.spectatorTime = Math.max(0, this.spectatorTime - seconds);
         markDirty();
+    }
+
+    public long getTotalMobTime() {
+        return totalMobTime;
+    }
+
+    public void setTotalMobTime(long totalMobTime) {
+        this.totalMobTime = totalMobTime;
+    }
+
+    public long getTotalSpectatorTime() {
+        return totalSpectatorTime;
+    }
+
+    public void setTotalSpectatorTime(long totalSpectatorTime) {
+        this.totalSpectatorTime = totalSpectatorTime;
     }
 }

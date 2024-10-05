@@ -16,6 +16,7 @@ import java.util.Collection;
 public class TimeCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("addtime")
+                .requires(source -> source.hasPermissionLevel(2))  // Requires OP permissions (level 2 or higher)
                 .then(CommandManager.argument("player", EntityArgumentType.players())
                         .then(CommandManager.argument("mobTime", IntegerArgumentType.integer(0))
                                 .then(CommandManager.argument("spectatorTime", IntegerArgumentType.integer(0))
@@ -29,6 +30,8 @@ public class TimeCommands {
                                                 if (data != null) {
                                                     data.setMobTime(data.getMobTime() + mobTime);
                                                     data.setSpectatorTime(data.getSpectatorTime() + spectatorTime);
+                                                    data.setTotalMobTime(data.getTotalMobTime() + mobTime);
+                                                    data.setTotalSpectatorTime(data.getTotalSpectatorTime() + spectatorTime);
 
                                                     player.sendMessage(Text.literal("Your time has been updated: " +
                                                             mobTime + " seconds of mob time and " +
