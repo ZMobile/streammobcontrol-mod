@@ -9,6 +9,7 @@ import com.blockafeller.trait.hunger.HungerUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -74,17 +75,20 @@ public class InventoryFiller {
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:evoker")
                             || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:warden")) {
                         ItemStack itemStack = new ItemStack(Items.STICK);
+                        NbtCompound nbt = itemStack.getOrCreateNbt();
+                        nbt.putBoolean("DoNotInteract", true);
 
                         // Step 2: Get the `EntityType` from the string ID
                         MobAbilityStickHandler.setMobType(itemStack, ((PlayerExtension) player).getInhabitedMobType().toString());
 
                         // Step 4: Set a custom name for the item (display name)
                         itemStack.setCustomName(Text.literal("Use Ability (Right Click)"));
-
 // Step 6: Replace the player’s inventory slot with the new custom item stack
                         player.getInventory().setStack(i, itemStack);
                     } else if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:creeper")) {
                         ItemStack itemStack = new ItemStack(Items.PUFFERFISH);
+                        NbtCompound nbt = itemStack.getOrCreateNbt();
+                        nbt.putBoolean("DoNotInteract", true);
 
                         CreeperFoodHandler.addCreeperFoodTag(itemStack);
 
@@ -95,6 +99,8 @@ public class InventoryFiller {
                         player.getInventory().setStack(i, itemStack);
                     } else if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:snow_golem")) {
                         ItemStack itemStack = new ItemStack(Items.SNOWBALL, 64);
+                        NbtCompound nbt = itemStack.getOrCreateNbt();
+                        nbt.putBoolean("DoNotInteract", true);
                         player.getInventory().setStack(i, itemStack);
                     }
                     continue;
@@ -136,9 +142,24 @@ public class InventoryFiller {
             if (i == 40) {
                 continue;
             }
+            if (i == 1) {
+                if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombified_piglin")
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombie")
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:drowned")
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombie_villager")
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:husk")) {
+                    item = MorphUtil.createDoorBreakingNugget();
+                    NbtCompound nbt2 = item.getOrCreateNbt();
+                    nbt2.putBoolean("DoNotInteract", true);
+                    player.getInventory().setStack(i, item);
+                    continue;
+                }
+            }
 
             // Create a custom-named paper item
             item = new ItemStack(Items.PAPER);
+            NbtCompound nbt = item.getOrCreateNbt();
+            nbt.putBoolean("DoNotInteract", true);
             if (i >= 36 && i <= 39) {
                 if (((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombie")
                         || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:drowned")
@@ -159,6 +180,8 @@ public class InventoryFiller {
                         || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:pillager")
                         || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:piglin")) {
                     item = new ItemStack(Items.ARROW);
+                    NbtCompound nbt2 = item.getOrCreateNbt();
+                    nbt2.putBoolean("DoNotInteract", true);
                     item.setCount(64);
                 }
             }
@@ -175,6 +198,8 @@ public class InventoryFiller {
     private static ItemStack createNamedPotion(Item potionType, String customName, Potion potionEffect) {
         // Create a new potion stack with the correct type
         ItemStack potionStack = new ItemStack(potionType);
+        NbtCompound nbt = potionStack.getOrCreateNbt();
+        nbt.putBoolean("DoNotInteract", true);
 
         // Set the potion type (e.g., Slowness, Weakness, Poison, etc.)
         PotionUtil.setPotion(potionStack, potionEffect);

@@ -114,9 +114,9 @@ public class CustomDeathDrops {
     }
 
     private static boolean wasPickedUp(ItemStack stack) {
-        // Check if the stack has the "picked_up" NBT tag
+        // Check if the stack has the "PickedUp" NBT tag
         System.out.println("Checking if item was picked up: " + stack);
-        boolean pickedUp = stack.hasNbt() && stack.getNbt().getBoolean("picked_up");
+        boolean pickedUp = stack.hasNbt() && stack.getNbt().getBoolean("PickedUp");
         System.out.println("Item was picked up: " + pickedUp);
         return pickedUp;
     }
@@ -124,6 +124,6 @@ public class CustomDeathDrops {
     // Utility method to mark an item as picked up
     public static void markAsPickedUp(ItemStack stack) {
         NbtCompound nbt = stack.getOrCreateNbt();
-        nbt.putBoolean("picked_up", true);
+        nbt.putBoolean("PickedUp", true);
     }
 }

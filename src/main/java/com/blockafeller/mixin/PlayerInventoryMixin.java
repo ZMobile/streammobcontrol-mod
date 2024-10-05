@@ -2,6 +2,7 @@ package com.blockafeller.mixin;
 
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.ProjectileRefill;
+import com.blockafeller.morph.MorphUtil;
 import draylar.identity.api.platform.IdentityConfig;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -32,8 +33,7 @@ public abstract class PlayerInventoryMixin {
             } else if (playerExtension.getInhabitedMobType().toString().equals("minecraft:snow_golem") && (stack.getItem() == Items.SNOWBALL)) {
                 System.out.println("Blocked glass bottle modification in inventory");
                 //ci.cancel(); // Cancel direct modification of the slot
-            } else if ((stack.getItem() == Items.PAPER && stack.getItem().getName().getString().startsWith("Do not interact"))
-                    || (player.getInventory().getStack(slot).getItem() == Items.PAPER && player.getInventory().getStack(slot).getName().getString().startsWith("Do not interact"))) {
+            } else if (MorphUtil.isDoNotInteractItem(stack)) {
                 System.out.println("Blocked tripwire hook modification in inventory: " + stack);
                 ci.cancel(); // Cancel direct modification of the slot
             }
@@ -98,10 +98,7 @@ public abstract class PlayerInventoryMixin {
     }
 
     private static void markAsPickedUp(ItemStack stack) {
-        // Add the "picked_up" NBT tag to the stack
-        if (stack.getItem().equals(Items.CLOCK) && stack.getItem().getName().getString().startsWith("Leave Morph")) {
-            return;
-        }
-        stack.getOrCreateNbt().putBoolean("picked_up", true);
+        // Add the "PickedUp" NBT tag to the stack
+        stack.getOrCreateNbt().putBoolean("PickedUp", true);
     }
 }

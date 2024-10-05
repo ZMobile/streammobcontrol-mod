@@ -1,6 +1,7 @@
 package com.blockafeller.inventory;
 
 import com.blockafeller.extension.PlayerExtension;
+import com.blockafeller.morph.MorphUtil;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.item.ItemStack;
@@ -11,7 +12,7 @@ public class DropPreventionHandler {
     public static void register() {
         PlayerEvent.DROP_ITEM.register((player, item) -> {
             ItemStack stack = item.getStack();
-            if ((stack.getItem() == Items.PAPER || stack.getItem() == Items.ARROW) && stack.getName().getString().startsWith("Do not interact") && ((PlayerExtension) player).isInhabiting()) {
+            if (MorphUtil.isDoNotInteractItem(stack) && ((PlayerExtension) player).isInhabiting()) {
                 InventoryFiller.fillInventoryWithPapers((ServerPlayerEntity) player);
                 return EventResult.interruptFalse(); // Prevent dropping the item
             }

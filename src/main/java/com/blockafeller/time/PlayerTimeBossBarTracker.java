@@ -32,12 +32,16 @@ public class PlayerTimeBossBarTracker {
         });
     }
 
+    public static ServerBossBar getOrCreateBossBar(ServerPlayerEntity player) {
+        return playerBossBars.computeIfAbsent(player, p -> createBossBar(p));
+    }
+
     private static void handleTimeDecrement(ServerPlayerEntity player) {
         // Get the player's TimeManager instance
         PlayerTimeData timeManager = PlayerTimeDataManager.getOrCreatePlayerTimeData(player.getUuid(), player.getServer());
 
         // Create or update the boss bar
-        ServerBossBar bossBar = playerBossBars.computeIfAbsent(player, p -> createBossBar(p));
+        ServerBossBar bossBar = getOrCreateBossBar(player);
 
         // Check if the player is in spectator mode or morphed
         if (player.interactionManager.getGameMode() == GameMode.SPECTATOR) {
@@ -79,20 +83,20 @@ public class PlayerTimeBossBarTracker {
         return bossBar;
     }
 
-    private static void updateBossBar(ServerBossBar bossBar, String title, float progress) {
+    public static void updateBossBar(ServerBossBar bossBar, String title, float progress) {
         // Update the boss bar title and progress
         bossBar.setName(Text.literal(title));
         bossBar.setPercent(progress);
     }
 
-    private static void showBossBar(ServerBossBar bossBar, ServerPlayerEntity player) {
+    public static void showBossBar(ServerBossBar bossBar, ServerPlayerEntity player) {
         // Add the player to the boss bar to make it visible
         if (!bossBar.getPlayers().contains(player)) {
             bossBar.addPlayer(player);
         }
     }
 
-    private static void hideBossBar(ServerBossBar bossBar, ServerPlayerEntity player) {
+    public static void hideBossBar(ServerBossBar bossBar, ServerPlayerEntity player) {
         // Remove the player from the boss bar to hide it
         if (bossBar.getPlayers().contains(player)) {
             bossBar.removePlayer(player);
@@ -100,7 +104,7 @@ public class PlayerTimeBossBarTracker {
     }
 
     // Helper method to check if a player is morphed
-    private static boolean isPlayerMorphed(ServerPlayerEntity player) {
+    public static boolean isPlayerMorphed(ServerPlayerEntity player) {
         // Use your existing logic to check if the player is in a morph state
         return ((PlayerExtension) player).isInhabiting();
     }

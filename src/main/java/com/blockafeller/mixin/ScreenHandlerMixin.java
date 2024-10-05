@@ -2,6 +2,7 @@ package com.blockafeller.mixin;
 
 import com.blockafeller.inventory.InventoryFiller;
 import com.blockafeller.extension.PlayerExtension;
+import com.blockafeller.morph.MorphUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -78,12 +79,10 @@ public abstract class ScreenHandlerMixin {
                 if (slotIndex == -999) {
                     System.out.println("Cursor slot interaction detected");
                 } else {
-                    if (((cursorStack.getItem() == Items.PAPER
-                            || cursorStack.getItem() == Items.ARROW)
-                            && cursorStack.getName().getString().startsWith("Do not interact"))
+                    if (MorphUtil.isDoNotInteractItem(cursorStack)) {
                 /*|| ((stackInTheSlot.getItem() == Items.PAPER
                     || stackInTheSlot.getItem() == Items.ARROW)
-                    && stackInTheSlot.getName().getString().startsWith("Do not interact"))*/) {
+                    && stackInTheSlot.getName().getString().startsWith("Do not interact"))*/
                         System.out.println("Blocked interaction in special slot");
                         InventoryFiller.fillInventoryWithPapers((ServerPlayerEntity) player);
                         ci.cancel(); // Cancel the interaction for cursor stack

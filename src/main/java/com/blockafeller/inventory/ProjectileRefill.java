@@ -19,13 +19,14 @@ public class ProjectileRefill {
     public static void refillArrows(ServerPlayerEntity player) {
         ItemStack itemStack = new ItemStack(Items.ARROW, 64);
         itemStack.setCustomName((Text.literal("Do not interact - Slot 27")));
+        NbtCompound nbt = itemStack.getOrCreateNbt();
+        nbt.putBoolean("DoNotInteract", true);
         player.getInventory().setStack(27, itemStack);
     }
 
     public static void refillTridents(ServerPlayerEntity player, PersistentProjectileEntity trident) {
         // Get the item currently in slot 0
         ItemStack currentStack = player.getInventory().getStack(0);
-
         // If the slot is occupied, drop the item in the world
         if (!currentStack.isEmpty()) {
             dropItem(player, currentStack);
@@ -113,7 +114,8 @@ public class ProjectileRefill {
     private static ItemStack createNamedPotion(Item potionType, String customName, Potion potionEffect) {
         // Create a new potion stack with the correct type
         ItemStack potionStack = new ItemStack(potionType);
-
+        NbtCompound nbt = potionStack.getOrCreateNbt();
+        nbt.putBoolean("DoNotInteract", true);
         // Set the potion type (e.g., Slowness, Weakness, Poison, etc.)
         PotionUtil.setPotion(potionStack, potionEffect);
 
@@ -126,6 +128,8 @@ public class ProjectileRefill {
 
     public static void refillSnowballs(ServerPlayerEntity player) {
         ItemStack itemStack = new ItemStack(Items.SNOWBALL, 64);
+        NbtCompound nbt = itemStack.getOrCreateNbt();
+        nbt.putBoolean("DoNotInteract", true);
         //itemStack.setCustomName((Text.literal("Do not interact - Slot 27")));
         player.getInventory().setStack(27, itemStack);
     }

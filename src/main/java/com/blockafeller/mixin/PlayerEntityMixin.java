@@ -4,6 +4,7 @@ import com.blockafeller.ability.AbilityStickListener;
 import com.blockafeller.inventory.InventoryFiller;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.ProjectileRefill;
+import com.blockafeller.morph.MorphUtil;
 import draylar.identity.api.platform.IdentityConfig;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -58,34 +59,10 @@ public class PlayerEntityMixin implements PlayerExtension {
     private void preventItemDrop(ItemStack stack, boolean throwRandomly, CallbackInfoReturnable<ItemEntity> cir) {
         if (!stack.isEmpty()
                  && this.inhabiting
-                && (((stack.getItem() == Items.PAPER || stack.getItem() == Items.ARROW || AbilityStickListener.isAbilityStick(stack)) && stack.getName().getString().startsWith("Do not interact")) || (stack.getItem() == Items.COMPASS && stack.getItem().getName().getString().startsWith("Leave Morph")))) {
+                && (MorphUtil.isDoNotInteractItem(stack))) {
             InventoryFiller.fillInventoryWithPapers((ServerPlayerEntity) (Object) this);
             System.out.println("Blocked tripwire hook drop");
             cir.setReturnValue(null); // Prevent dropping tripwire hooks
-        }
-        Map<String, Item> desiredPotions = Map.of(
-                "Potion of Slowness", Items.SPLASH_POTION,
-                "Potion of Weakness", Items.SPLASH_POTION,
-                "Potion of Poison", Items.SPLASH_POTION,
-                "Potion of Harming", Items.SPLASH_POTION,
-                "Healing Potion (discard to reset)", Items.POTION,
-                "Fire Resistance Potion (discard to reset)", Items.POTION,
-                "Swiftness Potion (discard to reset)", Items.POTION
-        );
-        if (this.inhabiting && this.getInhabitedMobType().toString().equals("minecraft:witch") && (desiredPotions.containsKey(stack.getName().getString())) || (stack.getItem() == Items.GLASS_BOTTLE)) {
-            InventoryFiller.fillInventoryWithPapers((ServerPlayerEntity) (Object) this);
-            System.out.println("Blocked potion drop");
-            cir.setReturnValue(null); // Prevent dropping potions
-        }
-        if (this.inhabiting && this.getInhabitedMobType().toString().equals("minecraft:snow_golem") && stack.getItem() == Items.SNOWBALL) {
-            InventoryFiller.fillInventoryWithPapers((ServerPlayerEntity) (Object) this);
-            System.out.println("Blocked glass bottle drop");
-            cir.setReturnValue(null); // Prevent dropping glass bottles
-        }
-        if (this.inhabiting && this.getInhabitedMobType().toString().equals("minecraft:creeper") && stack.getItem() == Items.PUFFERFISH) {
-            InventoryFiller.fillInventoryWithPapers((ServerPlayerEntity) (Object) this);
-            System.out.println("Blocked glass bottle drop");
-            cir.setReturnValue(null); // Prevent dropping glass bottles
         }
     }
 

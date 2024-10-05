@@ -2,8 +2,10 @@ package com.blockafeller.morph;
 
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.InventoryFiller;
+import com.blockafeller.time.PlayerTimeBossBarTracker;
 import com.blockafeller.time.PlayerTimeData;
 import com.blockafeller.time.PlayerTimeDataManager;
+import com.blockafeller.time.PlayerTimeTracker;
 import com.blockafeller.trait.hunger.HungerUtils;
 import draylar.identity.api.PlayerIdentity;
 import draylar.identity.api.variant.IdentityType;
@@ -13,6 +15,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -42,6 +46,8 @@ public class MorphEventHandler {
                             Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
 
                             // Morph into the mob type dynamically
+                            PlayerTimeData playerTimeData = PlayerTimeDataManager.getOrCreatePlayerTimeData(serverPlayer.getUuid(), serverPlayer.getServer());
+                            playerTimeData.setTotalMobTime(playerTimeData.getMobTime());
                             MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
                             return ActionResult.SUCCESS;
                         } else if (entity instanceof ServerPlayerEntity targetPlayer && ((PlayerExtension) targetPlayer).isInhabiting()) {
@@ -62,6 +68,8 @@ public class MorphEventHandler {
             ItemStack heldItem = player.getStackInHand(hand);
             if (player instanceof ServerPlayerEntity) {
                 if (MorphUtil.isReverseMorphKey(heldItem)) {
+                    ServerBossBar bossBar = PlayerTimeBossBarTracker.getOrCreateBossBar((ServerPlayerEntity) player);
+                    PlayerTimeBossBarTracker.hideBossBar(bossBar, (ServerPlayerEntity) player);
                     MorphService.reverseMorph((ServerPlayerEntity) player);
                 } else if (MorphUtil.isSpectateKey(heldItem)) {
                     MorphService.beginSpectating((ServerPlayerEntity) player);
