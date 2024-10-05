@@ -100,6 +100,16 @@ public class MorphService {
         }
     }
 
+    public static void beginSpectating(ServerPlayerEntity player) {
+        String playerName = player.getEntityName();
+
+        TpCommand.run(player.getServer(), player, new String[]{playerName, "minecarft:overworld"});
+        ((PlayerExtension) player).setInhabiting(false);
+        ((PlayerExtension) player).setInhabitedMobType(null);
+        // Step 2: Clear the player’s inventory
+        player.getInventory().clear();
+    }
+
     public static void returnPlayerToLobby(ServerPlayerEntity player) {
         // Step 1: Teleport the player to the lobby
         //player.teleport(0, 100, 0);

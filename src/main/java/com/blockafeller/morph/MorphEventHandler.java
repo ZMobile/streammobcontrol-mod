@@ -50,7 +50,7 @@ public class MorphEventHandler {
                 if (MorphUtil.isReverseMorphKey(heldItem)) {
                     MorphService.reverseMorph((ServerPlayerEntity) player);
                 } else if (MorphUtil.isSpectateKey(heldItem)) {
-
+                    MorphService.beginSpectating((ServerPlayerEntity) player);
                 }
             }
             return TypedActionResult.pass(heldItem);
