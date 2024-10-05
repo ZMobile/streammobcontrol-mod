@@ -17,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -29,15 +30,20 @@ public class MorphEventHandler {
         // Right-click a mob with Morph Key to transform
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             System.out.println("Right-clicked entity: " + entity);
-            if (player instanceof ServerPlayerEntity serverPlayer && entity instanceof MobEntity targetMob) {
+            if (player instanceof ServerPlayerEntity serverPlayer) {
                 if (serverPlayer.interactionManager.getGameMode() == GameMode.SPECTATOR) {
-                    // Get the type of the mob being right-clicked
-                    EntityType<?> mobType = targetMob.getType();
-                    Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
+                    if (entity instanceof MobEntity targetMob) {
+                         // Get the type of the mob being right-clicked
+                        EntityType<?> mobType = targetMob.getType();
+                        Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
 
-                    // Morph into the mob type dynamically
-                    MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
-                    return ActionResult.SUCCESS;
+                        // Morph into the mob type dynamically
+                        MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
+                        return ActionResult.SUCCESS;
+                    } else if (entity instanceof ServerPlayerEntity targetPlayer && ((PlayerExtension) targetPlayer).isInhabiting()) {
+                        player.sendMessage(Text.literal("Can't morph into this mob. It is already inhabited by a player!"), true);
+                        return ActionResult.SUCCESS;
+                    }
                 }
             }
             return ActionResult.PASS;

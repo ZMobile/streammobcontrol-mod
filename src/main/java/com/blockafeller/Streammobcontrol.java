@@ -68,7 +68,9 @@ public class Streammobcontrol implements ModInitializer {
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			ServerPlayerEntity player = handler.getPlayer();
-			MorphService.reverseMorph(player);
+			if (((PlayerExtension) player).isInhabiting()) {
+				MorphService.reverseMorph(player);
+			}
 		});
 
 		// Register the event listener
