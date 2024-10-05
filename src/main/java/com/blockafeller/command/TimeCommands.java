@@ -26,7 +26,7 @@ public class TimeCommands {
                                             int spectatorTime = IntegerArgumentType.getInteger(context, "spectatorTime");
 
                                             for (ServerPlayerEntity player : players) {
-                                                PlayerTimeData data = PlayerTimeDataManager.getPlayerTimeData(player.getUuid());
+                                                PlayerTimeData data = PlayerTimeDataManager.getOrCreatePlayerTimeData(player.getUuid(), player.getServer());
                                                 if (data != null) {
                                                     data.setMobTime(data.getMobTime() + mobTime);
                                                     data.setSpectatorTime(data.getSpectatorTime() + spectatorTime);

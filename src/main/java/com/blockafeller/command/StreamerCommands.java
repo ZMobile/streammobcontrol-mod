@@ -13,7 +13,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class StreamerCommands {
-    public static void registerStreamerCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("streamer")
                 // "add" sub-command
                 .then(CommandManager.literal("add")

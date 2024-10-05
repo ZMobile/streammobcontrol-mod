@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public class ItemDropRemover {
 
-    public static void registerItemDropListener() {
+    public static void register() {
         // Listen for new entities being loaded into the world
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             // Check if the entity is an ItemEntity and belongs to a server world

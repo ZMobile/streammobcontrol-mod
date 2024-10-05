@@ -73,15 +73,28 @@ public class MorphService {
 
             // Step 3: Spawn the mob in the world
             player.getWorld().spawnEntity(newMob);
-
-            // Step 4: Clear player inventory and reset morph status
-            player.getInventory().clear();
-            ((PlayerExtension) player).setInhabitedMobType(null);
-            ((PlayerExtension) player).setInhabiting(false);
-
-            // Step 5: Set player to Spectator mode
-            player.changeGameMode(GameMode.SPECTATOR);
         }
+        removeMorphAttributes(player);
+    }
+
+    public static void removeMorphAttributes(ServerPlayerEntity player) {
+        ServerCommandSource source = player.getServer().getCommandSource().withLevel(4).withSilent();
+        // Execute the command
+        String command = "/identity unequip " + player.getEntityName();
+
+        player.getServer().getCommandManager().executeWithPrefix(source, command);
+        player.setMovementSpeed(43.556f);
+        //PlayerIdentity.updateIdentity(player, null, null);
+        // Step 2: Clear the player’s inventory
+        player.getInventory().clear();
+
+        // Step 4: Clear player inventory and reset morph status
+        player.getInventory().clear();
+        ((PlayerExtension) player).setInhabitedMobType(null);
+        ((PlayerExtension) player).setInhabiting(false);
+
+        // Step 5: Set player to Spectator mode
+        player.changeGameMode(GameMode.SPECTATOR);
     }
     // Other methods remain unchanged...
 
@@ -117,11 +130,7 @@ public class MorphService {
         // Step 1: Teleport the player to the lobby+
         //player.teleport(0, 100, 0);
         player.changeGameMode(GameMode.SPECTATOR);
-        PlayerTimeData timeManager = PlayerTimeDataManager.getPlayerTimeData(player.getUuid());
-
-        if (timeManager == null) {
-            timeManager = PlayerTimeDataManager.getOrCreatePlayerTimeData(player.getUuid(), server);
-        }
+        PlayerTimeData  timeManager = PlayerTimeDataManager.getOrCreatePlayerTimeData(player.getUuid(), server);
         timeManager.setSpectatorTime(180);
         timeManager.setTotalSpectatorTime(180);
         String playerName = player.getEntityName();

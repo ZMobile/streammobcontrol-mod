@@ -2,6 +2,8 @@ package com.blockafeller.morph;
 
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.InventoryFiller;
+import com.blockafeller.time.PlayerTimeData;
+import com.blockafeller.time.PlayerTimeDataManager;
 import com.blockafeller.trait.hunger.HungerUtils;
 import draylar.identity.api.PlayerIdentity;
 import draylar.identity.api.variant.IdentityType;
@@ -26,22 +28,28 @@ import net.minecraft.world.GameMode;
 
 public class MorphEventHandler {
 
-    public static void registerMorphEvents() {
+    public static void register() {
         // Right-click a mob with Morph Key to transform
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             System.out.println("Right-clicked entity: " + entity);
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 if (serverPlayer.interactionManager.getGameMode() == GameMode.SPECTATOR) {
-                    if (entity instanceof MobEntity targetMob) {
-                         // Get the type of the mob being right-clicked
-                        EntityType<?> mobType = targetMob.getType();
-                        Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
+                    PlayerTimeData timeData = PlayerTimeDataManager.getOrCreatePlayerTimeData(serverPlayer.getUuid(), serverPlayer.getServer());
+                    if (timeData.getMobTime() > 0) {
+                        if (entity instanceof MobEntity targetMob) {
+                            // Get the type of the mob being right-clicked
+                            EntityType<?> mobType = targetMob.getType();
+                            Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
 
-                        // Morph into the mob type dynamically
-                        MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
-                        return ActionResult.SUCCESS;
-                    } else if (entity instanceof ServerPlayerEntity targetPlayer && ((PlayerExtension) targetPlayer).isInhabiting()) {
-                        player.sendMessage(Text.literal("Can't morph into this mob. It is already inhabited by a player!"), true);
+                            // Morph into the mob type dynamically
+                            MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
+                            return ActionResult.SUCCESS;
+                        } else if (entity instanceof ServerPlayerEntity targetPlayer && ((PlayerExtension) targetPlayer).isInhabiting()) {
+                            player.sendMessage(Text.literal("Can't morph into this mob. It is already inhabited by a player!"), true);
+                            return ActionResult.SUCCESS;
+                        }
+                    } else {
+                        player.sendMessage(Text.literal("You don't have enough mob time to morph!"), true);
                         return ActionResult.SUCCESS;
                     }
                 }

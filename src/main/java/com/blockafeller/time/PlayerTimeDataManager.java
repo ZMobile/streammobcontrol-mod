@@ -38,7 +38,7 @@ public class PlayerTimeDataManager {
     private static final Map<UUID, PlayerTimeData> playerDataMap = new HashMap<>();
 
     // Register the event listeners for player join, disconnect, and server ticks
-    public static void registerEvents() {
+    public static void register() {
         // Load the global data when the server starts
         ServerTickEvents.START_SERVER_TICK.register(PlayerTimeDataManager::loadGlobalData);
 

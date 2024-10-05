@@ -1,4 +1,5 @@
 package com.blockafeller.time;
+import com.blockafeller.config.ConfigManager;
 import com.blockafeller.extension.PlayerExtension;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.boss.BossBar;
@@ -16,7 +17,7 @@ public class PlayerTimeBossBarTracker {
     private static final Map<ServerPlayerEntity, ServerBossBar> playerBossBars = new HashMap<>();
     private static int tickCounter = 0;
 
-    public static void registerTickEvent() {
+    public static void register() {
         // Listen for the end of each server tick to track time
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             tickCounter++;
@@ -33,37 +34,33 @@ public class PlayerTimeBossBarTracker {
 
     private static void handleTimeDecrement(ServerPlayerEntity player) {
         // Get the player's TimeManager instance
-        PlayerTimeData timeManager = PlayerTimeDataManager.getPlayerTimeData(player.getUuid());
-
-        if (timeManager == null) {
-            return; // No time manager available for this player
-        }
+        PlayerTimeData timeManager = PlayerTimeDataManager.getOrCreatePlayerTimeData(player.getUuid(), player.getServer());
 
         // Create or update the boss bar
         ServerBossBar bossBar = playerBossBars.computeIfAbsent(player, p -> createBossBar(p));
 
         // Check if the player is in spectator mode or morphed
         if (player.interactionManager.getGameMode() == GameMode.SPECTATOR) {
-            if (timeManager.getSpectatorTime() > 0) {
-                updateBossBar(bossBar, "Spectator Time Remaining: " + timeManager.getSpectatorTime() + "s", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
-                showBossBar(bossBar, player); // Ensure boss bar is visible
-            } else if (timeManager.getMobTime() > 0) {
-                // Switch to mob time when spectator time runs out
-                long mobTimeToTransfer = Math.min(timeManager.getMobTime(), 30);
-                updateBossBar(bossBar, "Transferred " + mobTimeToTransfer + " seconds from Mob Time to Spectator Time.", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
-                showBossBar(bossBar, player); // Ensure boss bar is visible
-            } else {
-                // Both times have run out, switch to lobby or default state
-                //player.changeGameMode(GameMode.SURVIVAL); // Switch back to survival or lobby mode
-                hideBossBar(bossBar, player); // Hide the boss bar
+            if (ConfigManager.getConfig().isKickCycle()) {
+                if (timeManager.getSpectatorTime() > 0) {
+                    updateBossBar(bossBar, "Spectator Time Remaining: " + timeManager.getSpectatorTime() + "s", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
+                    showBossBar(bossBar, player); // Ensure boss bar is visible
+                } else if (timeManager.getMobTime() > 0) {
+                    // Switch to mob time when spectator time runs out
+                    long mobTimeToTransfer = Math.min(timeManager.getMobTime(), 30);
+                    updateBossBar(bossBar, "Transferred " + mobTimeToTransfer + " seconds from Mob Time to Spectator Time.", (float) timeManager.getSpectatorTime() / timeManager.getTotalSpectatorTime());
+                    showBossBar(bossBar, player); // Ensure boss bar is visible
+                } else {
+                    // Both times have run out, switch to lobby or default state
+                    //player.changeGameMode(GameMode.SURVIVAL); // Switch back to survival or lobby mode
+                    hideBossBar(bossBar, player); // Hide the boss bar
+                }
             }
         } else if (isPlayerMorphed(player)) { // Custom condition to check if the player is morphed
             if (timeManager.getMobTime() > 0) {
                 updateBossBar(bossBar, "Mob Time Remaining: " + timeManager.getMobTime() + "s", (float) timeManager.getMobTime() / timeManager.getTotalMobTime());
                 showBossBar(bossBar, player); // Ensure boss bar is visible
             } else {
-                ((PlayerExtension) player).setInhabiting(false); // Clear morph status
-                player.changeGameMode(GameMode.SURVIVAL); // Switch back to survival or spectator mode
                 hideBossBar(bossBar, player); // Hide the boss bar
             }
         } else {

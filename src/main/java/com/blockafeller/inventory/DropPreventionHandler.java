@@ -8,7 +8,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class DropPreventionHandler {
-    public static void registerDropPrevention() {
+    public static void register() {
         PlayerEvent.DROP_ITEM.register((player, item) -> {
             ItemStack stack = item.getStack();
             if ((stack.getItem() == Items.PAPER || stack.getItem() == Items.ARROW) && stack.getName().getString().startsWith("Do not interact") && ((PlayerExtension) player).isInhabiting()) {

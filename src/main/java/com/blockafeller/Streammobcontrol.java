@@ -4,13 +4,13 @@ import com.blockafeller.ability.AbilityPacketOverride;
 import com.blockafeller.ability.AbilityStickListener;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.command.*;
+import com.blockafeller.config.ConfigManager;
+import com.blockafeller.config.ModConfig;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.DropPreventionHandler;
 import com.blockafeller.morph.MorphEventHandler;
 import com.blockafeller.morph.MorphService;
-import com.blockafeller.multiworld.AutoLobbyFiller;
 import com.blockafeller.time.PlayerTimeBossBarTracker;
-import com.blockafeller.time.PlayerTimeData;
 import com.blockafeller.time.PlayerTimeDataManager;
 import com.blockafeller.time.PlayerTimeTracker;
 import com.blockafeller.trait.damage.MobDamageManager;
@@ -26,7 +26,6 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.block.DoorBlock;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -72,6 +71,9 @@ public class Streammobcontrol implements ModInitializer {
 				MorphService.reverseMorph(player);
 			}
 		});
+		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+			ConfigManager.loadConfig();
+		});
 
 		// Register the event listener
 		UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
@@ -97,30 +99,29 @@ public class Streammobcontrol implements ModInitializer {
 			ControlCommand.register(dispatcher, registryAccess);
 			//MorphKeyCommands.register(dispatcher, registryAccess);
 			TimeCommands.register(dispatcher);
-			StreamerCommands.registerStreamerCommand(dispatcher);
+			StreamerCommands.register(dispatcher);
+			KickCycleCommand.register(dispatcher);
 		});
 		//ServerLifecycleEvents.SERVER_STARTING.register(this::setupCustomLobbyWorld);
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
-		DropPreventionHandler.registerDropPrevention();
-		AbilityStickListener.registerAbilityStickListener();
+		DropPreventionHandler.register();
+		AbilityStickListener.register();
 		//CreeperFoodExplosion.register();
 		CreeperFoodHandler.register();
 		MobHungerManager.register();
 		//PotionHandler.registerPotionHandler();
-		CustomDeathDrops.registerDeathListener();
-		MorphEventHandler.registerMorphEvents();
+		CustomDeathDrops.register();
+		MorphEventHandler.register();
 		MobDamageManager.register();
 
-		PlayerTimeDataManager.registerEvents();
-		PlayerTimeTracker.registerTickEvent();
-		PlayerTimeBossBarTracker.registerTickEvent();
+		PlayerTimeDataManager.register();
+		PlayerTimeTracker.register();
+		PlayerTimeBossBarTracker.register();
 
-		AbilityPacketOverride.replaceUseAbilityPacketHandler();
-		ItemDropRemover.registerItemDropListener();
-
-		AutoLobbyFiller.registerRepeatingTask();
+		AbilityPacketOverride.register();
+		ItemDropRemover.register();
 		LOGGER.info("Hello Fabric world!");
 	}
 
@@ -129,7 +130,11 @@ public class Streammobcontrol implements ModInitializer {
 		if (!StreamerUtil.isStreamer(player)) {
 			System.out.println("Teleporting to lobby 2");
 			//MorphService.returnPlayerToLobby(player);
-			player.networkHandler.disconnect(Text.literal("Kick on death is assigned in order to cycle players. Please rejoin to try again."));
+			if (ConfigManager.getConfig().isKickCycle()) {
+				player.networkHandler.disconnect(Text.literal("Kick on death is assigned in order to cycle players. Please rejoin to try again."));
+			} else {
+				MorphService.removeMorphAttributes(player);
+			}
 		}
 	}
 

@@ -7,7 +7,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.TypedActionResult;
 
 public class AbilityStickListener {
-    public static void registerAbilityStickListener() {
+    public static void register() {
         // Register the event listener for item use
         UseItemCallback.EVENT.register((player, world, hand) -> {
             System.out.println("UseItemCallback 1");

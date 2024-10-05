@@ -21,7 +21,7 @@ import java.util.List;
 
 public class CustomDeathDrops {
 
-    public static void registerDeathListener() {
+    public static void register() {
         // Register the death event with ServerEntityEvents
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (entity instanceof ServerPlayerEntity serverPlayer && ((PlayerExtension) serverPlayer).isInhabiting()) {

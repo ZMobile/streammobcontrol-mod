@@ -11,7 +11,7 @@ public class AbilityPacketOverride {
     // Replace "draylar.identity.network.ServerNetworking.USE_ABILITY" with the correct identifier
     private static final Identifier USE_ABILITY = new Identifier("identity", "use_ability");
 
-    public static void replaceUseAbilityPacketHandler() {
+    public static void register() {
         // Override the packet handler with a no-op implementation
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, USE_ABILITY, AbilityPacketOverride::onUseAbility);
     }
