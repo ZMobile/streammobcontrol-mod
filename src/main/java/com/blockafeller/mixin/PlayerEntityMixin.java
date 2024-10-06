@@ -127,4 +127,5 @@ public class PlayerEntityMixin implements PlayerExtension {
         player.getItemCooldownManager().set(Items.POTION, cooldown);
         player.getItemCooldownManager().set(Items.LINGERING_POTION, cooldown);// Apply cooldown to splash potions
     }
+
 }

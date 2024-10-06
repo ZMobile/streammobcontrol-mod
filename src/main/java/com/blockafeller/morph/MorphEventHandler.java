@@ -2,10 +2,7 @@ package com.blockafeller.morph;
 
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.InventoryFiller;
-import com.blockafeller.time.PlayerTimeBossBarTracker;
-import com.blockafeller.time.PlayerTimeData;
-import com.blockafeller.time.PlayerTimeDataManager;
-import com.blockafeller.time.PlayerTimeTracker;
+import com.blockafeller.time.*;
 import com.blockafeller.trait.hunger.HungerUtils;
 import draylar.identity.api.PlayerIdentity;
 import draylar.identity.api.variant.IdentityType;
@@ -41,14 +38,18 @@ public class MorphEventHandler {
                     PlayerTimeData timeData = PlayerTimeDataManager.getOrCreatePlayerTimeData(serverPlayer.getUuid(), serverPlayer.getServer());
                     if (timeData.getMobTime() > 0) {
                         if (entity instanceof MobEntity targetMob) {
-                            // Get the type of the mob being right-clicked
-                            EntityType<?> mobType = targetMob.getType();
-                            Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
+                            if (GracePeriodTimeTracker.getGracePeriodTimeRemaining() > 0) {
+                                player.sendMessage(Text.literal("You can't morph during the grace period!"), true);
+                            } else {
+                                // Get the type of the mob being right-clicked
+                                EntityType<?> mobType = targetMob.getType();
+                                Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
 
-                            // Morph into the mob type dynamically
-                            PlayerTimeData playerTimeData = PlayerTimeDataManager.getOrCreatePlayerTimeData(serverPlayer.getUuid(), serverPlayer.getServer());
-                            playerTimeData.setTotalMobTime(playerTimeData.getMobTime());
-                            MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
+                                // Morph into the mob type dynamically
+                                PlayerTimeData playerTimeData = PlayerTimeDataManager.getOrCreatePlayerTimeData(serverPlayer.getUuid(), serverPlayer.getServer());
+                                playerTimeData.setTotalMobTime(playerTimeData.getMobTime());
+                                MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
+                            }
                             return ActionResult.SUCCESS;
                         } else if (entity instanceof ServerPlayerEntity targetPlayer && ((PlayerExtension) targetPlayer).isInhabiting()) {
                             player.sendMessage(Text.literal("Can't morph into this mob. It is already inhabited by a player!"), true);

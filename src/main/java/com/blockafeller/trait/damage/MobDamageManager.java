@@ -84,7 +84,8 @@ public class MobDamageManager {
             addMobDamage("minecraft:ender_dragon_wings", 3.0f, 5.0f, 7.0f);
 
             // Enderman
-            addMobDamage("minecraft:enderman", 4.5f, 7.0f, 10.5f);
+            //addMobDamage("minecraft:enderman", 4.5f, 7.0f, 10.5f);
+            addMobDamage("minecraft:enderman", 2.5f, 3.0f, 4.5f);
 
             // Endermite
             addMobDamage("minecraft:endermite", 2.0f, 3.0f, 3.0f);
@@ -144,22 +145,22 @@ public class MobDamageManager {
             addMobDamage("minecraft:phantom", 2.0f, 3.0f, 4.0f);
 
             // Piglin (Melee with Sword)
-            addMobDamage("minecraft:piglin_sword", 5.0f, 8.0f, 12.0f);
+            //addMobDamage("minecraft:piglin_sword", 5.0f, 8.0f, 12.0f);
 
             // Piglin (Melee without Sword)
-            addMobDamage("minecraft:piglin_no_sword", 3.5f, 5.0f, 7.5f);
+            addMobDamage("minecraft:piglin", 3.5f, 5.0f, 7.5f);
 
             // Piglin Brute
-            addMobDamage("minecraft:piglin_brute", 7.5f, 13.0f, 19.5f);
+            //addMobDamage("minecraft:piglin_brute", 7.5f, 13.0f, 19.5f);
 
             // Polar Bear
             addMobDamage("minecraft:polar_bear", 4.0f, 6.0f, 9.0f);
 
             // Ravager (Melee)
-            addMobDamage("minecraft:ravager_melee", 7.0f, 12.0f, 18.0f);
+            addMobDamage("minecraft:ravager", 7.0f, 12.0f, 18.0f);
 
             // Ravager (Roar)
-            addMobDamage("minecraft:ravager_roar", 4.0f, 6.0f, 9.0f);
+            //addMobDamage("minecraft:ravager_roar", 4.0f, 6.0f, 9.0f);
 
             // Shulker Bullet
             addMobDamage("minecraft:shulker_bullet", 4.0f, 4.0f, 4.0f);
@@ -168,7 +169,7 @@ public class MobDamageManager {
             addMobDamage("minecraft:silverfish", 1.0f, 1.0f, 1.0f);
 
             // Skeleton (Melee)
-            addMobDamage("minecraft:skeleton_melee", 2.0f, 3.0f, 3.0f);
+            addMobDamage("minecraft:skeleton", 2.0f, 3.0f, 3.0f);
 
             // Slime (big)
             addMobDamage("minecraft:slime_big", 3.0f, 4.0f, 6.0f);

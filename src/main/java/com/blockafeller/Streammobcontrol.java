@@ -4,11 +4,13 @@ import com.blockafeller.ability.AbilityPacketOverride;
 import com.blockafeller.ability.AbilityStickListener;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.command.*;
+import com.blockafeller.compass.TrackingCompassMod;
 import com.blockafeller.config.ConfigManager;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.DropPreventionHandler;
 import com.blockafeller.morph.MorphEventHandler;
 import com.blockafeller.morph.MorphService;
+import com.blockafeller.time.GracePeriodTimeTracker;
 import com.blockafeller.time.PlayerTimeBossBarTracker;
 import com.blockafeller.time.PlayerTimeDataManager;
 import com.blockafeller.time.PlayerTimeTracker;
@@ -102,6 +104,7 @@ public class Streammobcontrol implements ModInitializer {
 			RunCommand.register(dispatcher);
 
 			KickCycleCommand.register(dispatcher);
+			GracePeriodCommand.register(dispatcher);
 		});
 		//ServerLifecycleEvents.SERVER_STARTING.register(this::setupCustomLobbyWorld);
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -120,9 +123,12 @@ public class Streammobcontrol implements ModInitializer {
 		PlayerTimeDataManager.register();
 		PlayerTimeTracker.register();
 		PlayerTimeBossBarTracker.register();
+		GracePeriodTimeTracker.register();
 
 		AbilityPacketOverride.register();
 		ItemDropRemover.register();
+
+		TrackingCompassMod.register();
 		LOGGER.info("Hello Fabric world!");
 	}
 

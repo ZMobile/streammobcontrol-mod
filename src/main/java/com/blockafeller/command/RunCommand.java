@@ -1,5 +1,7 @@
 package com.blockafeller.command;
 
+import com.blockafeller.extension.PlayerExtension;
+import com.blockafeller.morph.MorphService;
 import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.CommandManager;
@@ -25,9 +27,14 @@ public class RunCommand {
 
                             // Iterate through all players and apply changes to streamers
                             for (ServerPlayerEntity player : playerManager.getPlayerList()) {
+                                if (((PlayerExtension) player).isInhabiting()) {
+                                    MorphService.reverseMorph(player);
+                                }
                                 if (StreamerUtil.isStreamer(player)) {
                                     // Set the player's game mode to survival
                                     player.changeGameMode(GameMode.SURVIVAL);
+                                    player.setHealth(20.0F);
+                                    player.getHungerManager().setFoodLevel(20);
 
                                     // Teleport the player to the Overworld spawn position
                                     player.teleport(overworld, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), player.getYaw(), player.getPitch());
