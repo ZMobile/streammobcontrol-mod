@@ -1,5 +1,6 @@
 package com.blockafeller.morph;
 
+import com.blockafeller.ability.MorphFlightManager;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.InventoryFiller;
 import com.blockafeller.time.PlayerTimeData;
@@ -49,7 +50,7 @@ public class MorphService {
         morphPlayerToMob(player, mobId);
         player.changeGameMode(GameMode.ADVENTURE);
         player.setHealth(targetMob.getHealth());
-
+        MorphFlightManager.conditionallyGiveMorphedPlayerFlightAbilities(player);
 
         // Step 5: Despawn the target mob
         targetMob.remove(Entity.RemovalReason.DISCARDED);
@@ -70,7 +71,7 @@ public class MorphService {
             newMob.equipStack(EquipmentSlot.CHEST, player.getInventory().armor.get(1));
             newMob.equipStack(EquipmentSlot.LEGS, player.getInventory().armor.get(2));
             newMob.equipStack(EquipmentSlot.FEET, player.getInventory().armor.get(3));
-
+            newMob.setHealth(player.getHealth());
             // Step 3: Spawn the mob in the world
             player.getWorld().spawnEntity(newMob);
         }
@@ -86,8 +87,6 @@ public class MorphService {
         player.setMovementSpeed(43.556f);
         //PlayerIdentity.updateIdentity(player, null, null);
         // Step 2: Clear the player’s inventory
-        player.getInventory().clear();
-
         // Step 4: Clear player inventory and reset morph status
         player.getInventory().clear();
         ((PlayerExtension) player).setInhabitedMobType(null);

@@ -31,7 +31,6 @@ public class RunCommand {
 
                                     // Teleport the player to the Overworld spawn position
                                     player.teleport(overworld, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), player.getYaw(), player.getPitch());
-
                                     // Send a feedback message to the player
                                     player.sendMessage(Text.literal("You have been teleported to the Overworld spawn and set to Survival mode!"), false);
                                 }

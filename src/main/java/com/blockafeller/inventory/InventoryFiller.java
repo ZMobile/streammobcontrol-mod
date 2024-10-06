@@ -3,6 +3,7 @@ package com.blockafeller.inventory;
 
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.ability.MobAbilityStickHandler;
+import com.blockafeller.config.ConfigManager;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.morph.MorphUtil;
 import com.blockafeller.trait.hunger.HungerUtils;
@@ -27,9 +28,9 @@ public class InventoryFiller {
     public static void fillInventoryWithPapers(ServerPlayerEntity player) {
         // Iterate over each slot in the player's inventory
         for (int i = 0; i < player.getInventory().size(); i++) {
-            if (i == 8) {
+            if (i == 8 && !ConfigManager.getConfig().isKickCycle()) {
                 ItemStack itemStack = MorphUtil.createReverseMorphKey();
-                itemStack.setCustomName(Text.literal("Leave Morph and Return to Lobby  "));
+                itemStack.setCustomName(Text.literal("Leave Morph and Return to Lobby"));
                 player.getInventory().setStack(i, itemStack);
                 continue;
             }

@@ -68,8 +68,8 @@ public class MorphEventHandler {
             ItemStack heldItem = player.getStackInHand(hand);
             if (player instanceof ServerPlayerEntity) {
                 if (MorphUtil.isReverseMorphKey(heldItem)) {
-                    ServerBossBar bossBar = PlayerTimeBossBarTracker.getOrCreateBossBar((ServerPlayerEntity) player);
-                    PlayerTimeBossBarTracker.hideBossBar(bossBar, (ServerPlayerEntity) player);
+                    //  ServerBossBar bossBar = PlayerTimeBossBarTracker.getOrCreateBossBar((ServerPlayerEntity) player);
+                    //PlayerTimeBossBarTracker.hideBossBar(bossBar, (ServerPlayerEntity) player);
                     MorphService.reverseMorph((ServerPlayerEntity) player);
                 } else if (MorphUtil.isSpectateKey(heldItem)) {
                     MorphService.beginSpectating((ServerPlayerEntity) player);

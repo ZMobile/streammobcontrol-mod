@@ -2,6 +2,7 @@ package com.blockafeller.trait.loot;
 
 import com.blockafeller.extension.PlayerExtension;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -23,10 +24,12 @@ public class CustomDeathDrops {
 
     public static void register() {
         // Register the death event with ServerEntityEvents
-        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+        ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, damage) -> {
             if (entity instanceof ServerPlayerEntity serverPlayer && ((PlayerExtension) serverPlayer).isInhabiting()) {
+                System.out.println("Handling custom drops for: " + serverPlayer);
                 handleCustomDrops(serverPlayer, source);
             }
+            return true;
         });
     }
 
@@ -67,6 +70,7 @@ public class CustomDeathDrops {
     }
 
     private static void dropMobLoot(ServerPlayerEntity player, String lootTableId, DamageSource damageSource) {
+        System.out.println("Dropping custom loot for: " + lootTableId);
         MinecraftServer server = player.getServer();
         if (server != null) {
             // Get the loot table for the mob
@@ -85,6 +89,7 @@ public class CustomDeathDrops {
             for (ItemStack stack : loot) {
                 ItemEntity itemEntity = new ItemEntity(player.getWorld(), player.getX(), player.getY(), player.getZ(), stack);
                 player.getWorld().spawnEntity(itemEntity);
+                System.out.println("Loot item: " + stack);
             }
         }
     }
