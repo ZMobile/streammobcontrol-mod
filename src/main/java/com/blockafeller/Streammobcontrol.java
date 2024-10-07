@@ -1,7 +1,7 @@
 package com.blockafeller;
 
 import com.blockafeller.ability.AbilityPacketOverride;
-import com.blockafeller.ability.AbilityStickListener;
+import com.blockafeller.ability.AbilityListener;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.command.*;
 import com.blockafeller.compass.TrackingCompassMod;
@@ -111,7 +111,7 @@ public class Streammobcontrol implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 		DropPreventionHandler.register();
-		AbilityStickListener.register();
+		AbilityListener.register();
 		//CreeperFoodExplosion.register();
 		CreeperFoodHandler.register();
 		MobHungerManager.register();
@@ -140,8 +140,10 @@ public class Streammobcontrol implements ModInitializer {
 			if (ConfigManager.getConfig().isKickCycle()) {
 				player.networkHandler.disconnect(Text.literal("Kick on death is assigned in order to cycle players. Please rejoin to try again."));
 			} else {
-				MorphService.removeMorphAttributes(player);
+				MorphService.returnPlayerToLobby(player.getServer(), player);
 			}
+		} else if (((PlayerExtension) player).isInhabiting()) {
+			MorphService.removeMorphAttributes(player);
 		}
 	}
 

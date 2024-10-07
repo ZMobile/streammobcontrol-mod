@@ -2,6 +2,7 @@ package com.blockafeller.command;
 
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.morph.MorphService;
+import com.blockafeller.time.GracePeriodTimeTracker;
 import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.CommandManager;
@@ -19,6 +20,7 @@ public class RunCommand {
                 .then(CommandManager.literal("start")  // Create the "start" sub-command
                         .executes(context -> {
                             // Logic for "/run start" goes here]
+                            GracePeriodTimeTracker.resetGracePeriodTime();
                             var playerManager = context.getSource().getServer().getPlayerManager();
 
                             // Get the Overworld spawn location

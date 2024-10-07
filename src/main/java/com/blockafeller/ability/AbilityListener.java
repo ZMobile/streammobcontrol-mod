@@ -4,18 +4,14 @@ import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.morph.MorphUtil;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.TypedActionResult;
 
-public class AbilityStickListener {
+public class AbilityListener {
     public static void register() {
         // Register the event listener for item use
         UseItemCallback.EVENT.register((player, world, hand) -> {
             System.out.println("UseItemCallback 1");
             ItemStack stack = player.getStackInHand(hand);
-            if (stack.getItem() != Items.STICK) {
-                return TypedActionResult.pass(stack);
-            }
             System.out.println("UseItemCallback 2");
             // Check if the player is holding a special ability stick (vanilla stick with NBT data)
             if (!((PlayerExtension) player).isInhabiting()) {

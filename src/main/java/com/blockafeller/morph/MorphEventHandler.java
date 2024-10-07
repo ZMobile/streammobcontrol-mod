@@ -39,16 +39,13 @@ public class MorphEventHandler {
                     if (timeData.getMobTime() > 0) {
                         if (entity instanceof MobEntity targetMob) {
                             if (GracePeriodTimeTracker.getGracePeriodTimeRemaining() > 0) {
-                                player.sendMessage(Text.literal("You can't morph during the grace period!"), true);
+                                player.sendMessage(Text.literal("You can't morph during the grace period! Grace period time remaining:" + GracePeriodTimeTracker.getGracePeriodTimeRemaining()), true);
                             } else {
                                 // Get the type of the mob being right-clicked
-                                EntityType<?> mobType = targetMob.getType();
-                                Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
-
                                 // Morph into the mob type dynamically
                                 PlayerTimeData playerTimeData = PlayerTimeDataManager.getOrCreatePlayerTimeData(serverPlayer.getUuid(), serverPlayer.getServer());
                                 playerTimeData.setTotalMobTime(playerTimeData.getMobTime());
-                                MorphService.morphPlayerToMob(serverPlayer, targetMob, mobId);
+                                MorphService.morphPlayerToMob(serverPlayer, targetMob);
                             }
                             return ActionResult.SUCCESS;
                         } else if (entity instanceof ServerPlayerEntity targetPlayer && ((PlayerExtension) targetPlayer).isInhabiting()) {
@@ -66,12 +63,15 @@ public class MorphEventHandler {
 
         // Right-click in air with Reverse Morph Key to transform back
         UseItemCallback.EVENT.register((player, world, hand) -> {
+            System.out.println("Right-clicked");
             ItemStack heldItem = player.getStackInHand(hand);
             if (player instanceof ServerPlayerEntity) {
+                System.out.println("Right-clicked player selected slot: " +    player.getInventory().selectedSlot);
                 if (MorphUtil.isReverseMorphKey(heldItem)) {
                     //  ServerBossBar bossBar = PlayerTimeBossBarTracker.getOrCreateBossBar((ServerPlayerEntity) player);
                     //PlayerTimeBossBarTracker.hideBossBar(bossBar, (ServerPlayerEntity) player);
                     MorphService.reverseMorph((ServerPlayerEntity) player);
+
                 } else if (MorphUtil.isSpectateKey(heldItem)) {
                     MorphService.beginSpectating((ServerPlayerEntity) player);
                 }

@@ -4,9 +4,12 @@ import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.morph.MorphUtil;
 import com.blockafeller.util.StreamerUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -46,8 +49,7 @@ public class TrackingCompassMod {
                 itemStack.getOrCreateNbt().putBoolean("LodestoneTracked", true);
                 itemStack.getOrCreateNbt().put("LodestonePos", NbtHelper.fromBlockPos(nearestPos));
                 itemStack.getOrCreateNbt().putString("LodestoneDimension", player.getWorld().getRegistryKey().getValue().toString());
-
-                System.out.println("Setting compass to point to: " + nearestPlayer.getEntityName() + " at " + nearestPos);
+                itemStack.getOrCreateNbt().putBoolean("DoNotInteract", true);
             }
         }
     }
@@ -71,7 +73,6 @@ public class TrackingCompassMod {
             // Calculate the distance and update if this is the nearest Survival mode player
             double distance = player.squaredDistanceTo(target);
             if (distance < minDistance) {
-                System.out.println("Found nearest player: " + target.getEntityName());
                 minDistance = distance;
                 nearestPlayer = target;
             }

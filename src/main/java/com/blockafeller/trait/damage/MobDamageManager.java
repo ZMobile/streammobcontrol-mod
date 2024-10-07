@@ -5,7 +5,11 @@ import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolItem;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.Difficulty;
@@ -28,16 +32,54 @@ public class MobDamageManager {
                 if (hand == Hand.MAIN_HAND && player instanceof PlayerExtension && ((PlayerExtension) player).isInhabiting()) {
                     String mobType = ((PlayerExtension) player).getInhabitedMobType().toString();
                     String difficulty = getDifficultyLevel(world.getDifficulty());
-
+                    System.out.println("AttackEntityCallback triggered 3");
+                    System.out.println("AttackEntityCallback triggered 4");
                     // Get the damage value based on mob type and difficulty
-                    float damage = getMobDamage(mobType, difficulty);
+                    float mobDamage = getMobDamage(mobType, difficulty);
+                    System.out.println("AttackEntityCallback triggered 5");
+                    // Calculate weapon damage
+                    float weaponDamage = getWeaponDamage(player.getStackInHand(hand));
+                    System.out.println("AttackEntityCallback triggered 6");
+                    System.out.println("Mob damage: " + mobDamage + ", Weapon damage: " + weaponDamage);
+                    // Modify the damage output dynamically based on weapon and mob type
+                    float totalDamage = mobDamage + weaponDamage;
+                    totalDamage = (float) applyStatusEffectModifiers(player, totalDamage);
 
-                    // Modify player's attack damage attribute based on the value
-                    modifyPlayerDamage((PlayerEntity) player, damage);
+                    // Temporarily modify player's damage to reflect the calculated value
+                    modifyPlayerDamage(player, totalDamage);
                 }
             }
             return ActionResult.PASS; // Allow other mods to process this event
         });
+    }
+
+    private static double applyStatusEffectModifiers(LivingEntity entity, double baseDamage) {
+        // Check for Strength effect
+        if (entity.hasStatusEffect(StatusEffects.STRENGTH)) {
+            int amplifier = entity.getStatusEffect(StatusEffects.STRENGTH).getAmplifier();
+            baseDamage += 3 * (amplifier + 1);  // Each level adds 3 damage
+        }
+
+        // Check for Weakness effect
+        if (entity.hasStatusEffect(StatusEffects.WEAKNESS)) {
+            int amplifier = entity.getStatusEffect(StatusEffects.WEAKNESS).getAmplifier();
+            baseDamage -= 4 * (amplifier + 1);  // Each level reduces damage by 4
+        }
+
+        // Prevent negative damage values
+        return Math.max(0.0, baseDamage);
+    }
+    private static float getWeaponDamage(ItemStack stack) {
+        // Check if the item is a tool (sword, axe, etc.)
+        if (stack.getItem() instanceof ToolItem toolItem) {
+            return toolItem.getMaterial().getAttackDamage();
+        }
+
+        // Check if the item is a sword
+        if (stack.getItem() instanceof SwordItem swordItem) {
+            return swordItem.getMaterial().getAttackDamage();
+        }
+        return 0.0f;
     }
 
     /**
@@ -84,8 +126,7 @@ public class MobDamageManager {
             addMobDamage("minecraft:ender_dragon_wings", 3.0f, 5.0f, 7.0f);
 
             // Enderman
-            //addMobDamage("minecraft:enderman", 4.5f, 7.0f, 10.5f);
-            addMobDamage("minecraft:enderman", 2.5f, 3.0f, 4.5f);
+            addMobDamage("minecraft:enderman", 4.5f, 7.0f, 10.5f);
 
             // Endermite
             addMobDamage("minecraft:endermite", 2.0f, 3.0f, 3.0f);
@@ -145,22 +186,22 @@ public class MobDamageManager {
             addMobDamage("minecraft:phantom", 2.0f, 3.0f, 4.0f);
 
             // Piglin (Melee with Sword)
-            //addMobDamage("minecraft:piglin_sword", 5.0f, 8.0f, 12.0f);
+            addMobDamage("minecraft:piglin_sword", 5.0f, 8.0f, 12.0f);
 
             // Piglin (Melee without Sword)
-            addMobDamage("minecraft:piglin", 3.5f, 5.0f, 7.5f);
+            addMobDamage("minecraft:piglin_no_sword", 3.5f, 5.0f, 7.5f);
 
             // Piglin Brute
-            //addMobDamage("minecraft:piglin_brute", 7.5f, 13.0f, 19.5f);
+            addMobDamage("minecraft:piglin_brute", 7.5f, 13.0f, 19.5f);
 
             // Polar Bear
             addMobDamage("minecraft:polar_bear", 4.0f, 6.0f, 9.0f);
 
             // Ravager (Melee)
-            addMobDamage("minecraft:ravager", 7.0f, 12.0f, 18.0f);
+            addMobDamage("minecraft:ravager_melee", 7.0f, 12.0f, 18.0f);
 
             // Ravager (Roar)
-            //addMobDamage("minecraft:ravager_roar", 4.0f, 6.0f, 9.0f);
+            addMobDamage("minecraft:ravager_roar", 4.0f, 6.0f, 9.0f);
 
             // Shulker Bullet
             addMobDamage("minecraft:shulker_bullet", 4.0f, 4.0f, 4.0f);
@@ -169,7 +210,7 @@ public class MobDamageManager {
             addMobDamage("minecraft:silverfish", 1.0f, 1.0f, 1.0f);
 
             // Skeleton (Melee)
-            addMobDamage("minecraft:skeleton", 2.0f, 3.0f, 3.0f);
+            addMobDamage("minecraft:skeleton_melee", 2.0f, 3.0f, 3.0f);
 
             // Slime (big)
             addMobDamage("minecraft:slime_big", 3.0f, 4.0f, 6.0f);

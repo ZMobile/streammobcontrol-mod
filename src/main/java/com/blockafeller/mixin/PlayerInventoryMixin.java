@@ -91,10 +91,10 @@ public abstract class PlayerInventoryMixin {
     @Inject(method = "offerOrDrop", at = @At("HEAD"))
     private void onPickupItem(ItemStack stack, CallbackInfo ci) {
         // Mark the item stack as picked up by adding an NBT tag
-        PlayerEntity player = ((PlayerInventory) (Object) this).player;
+        /*PlayerEntity player = ((PlayerInventory) (Object) this).player;
         if (((PlayerExtension)player).isInhabiting()) {
             markAsPickedUp(stack);
-        }
+        }*/
     }
 
     private static void markAsPickedUp(ItemStack stack) {

@@ -35,10 +35,9 @@ public class MobHungerManager {
 
                 // Get the last stable food level
                 int lastStableLevel = lastFoodLevels.get(player);*/
-                int lastStableLevel = 10;
 
                 // If the food level has gone down and the player is not eating, restore it
-                if (currentFoodLevel < lastStableLevel && !player.isUsingItem()) {
+                if (currentFoodLevel != 10 && !player.isUsingItem()) {
                     player.getHungerManager().setFoodLevel(10);
                 }
 

@@ -13,6 +13,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -21,7 +23,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 
 public class MorphService {
-    public static void morphPlayerToMob(ServerPlayerEntity player, MobEntity targetMob, Identifier mobId) {
+    public static void morphPlayerToMob(ServerPlayerEntity player, MobEntity targetMob) {
         // Step 1: Save player’s inventory and teleport to mob’s position
         player.teleport(targetMob.getX(), targetMob.getY(), targetMob.getZ());
 
@@ -31,8 +33,13 @@ public class MorphService {
 
         // Step 3: Equip the player with the mob’s items
         player.getInventory().clear(); // Clear player’s inventory
-        player.getInventory().setStack(0, targetMob.getMainHandStack());
-        player.getInventory().setStack(40, targetMob.getOffHandStack()); // Off-hand
+        ItemStack mainHand = targetMob.getMainHandStack();
+        markAsNotPickedUp(mainHand);
+        ItemStack offHand = targetMob.getOffHandStack();
+        markAsNotPickedUp(offHand);
+
+        player.getInventory().setStack(0, mainHand);
+        player.getInventory().setStack(40, offHand); // Off-hand
         player.getInventory().armor.set(0, targetMob.getEquippedStack(EquipmentSlot.HEAD));
         player.getInventory().armor.set(1, targetMob.getEquippedStack(EquipmentSlot.CHEST));
         player.getInventory().armor.set(2, targetMob.getEquippedStack(EquipmentSlot.LEGS));
@@ -40,14 +47,16 @@ public class MorphService {
 
 
         // Step 4: Set morph status and game mode
+        EntityType<?> mobType = targetMob.getType();
+        Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
         ((PlayerExtension) player).setInhabiting(false);
         ((PlayerExtension) player).setInhabitedMobType(mobId);
+        ((PlayerExtension) player).setInhabitedMobEntity(targetMob);
         HungerUtils.setPlayerHunger(player, 10, 0f);
-
         InventoryFiller.fillInventoryWithPapers(player);
         ((PlayerExtension) player).setInhabiting(true);
         System.out.println("Mob id: " + mobId);
-        morphPlayerToMob(player, mobId);
+        activateMorph(player, targetMob);
         player.changeGameMode(GameMode.ADVENTURE);
         player.setHealth(targetMob.getHealth());
         MorphFlightManager.conditionallyGiveMorphedPlayerFlightAbilities(player);
@@ -56,13 +65,53 @@ public class MorphService {
         targetMob.remove(Entity.RemovalReason.DISCARDED);
     }
 
+
+    private static void markAsNotPickedUp(ItemStack stack) {
+        // Add the "PickedUp" NBT tag to the stack
+        stack.getOrCreateNbt().putBoolean("PickedUp", false);
+    }
+
     public static void reverseMorph(ServerPlayerEntity player) {
         // Step 1: Create a new mob at the player’s location with the same attributes
         Identifier mobId = ((PlayerExtension) player).getInhabitedMobType();
         MobEntity newMob = (MobEntity) Registries.ENTITY_TYPE.get(mobId).create(player.getWorld());
+        LivingEntity originalMob = ((PlayerExtension) player).getInhabitedMobEntity();
+        if (newMob != null && originalMob != null) {
+
+            // Step 2: Copy NBT data from originalMob to newMob
+            NbtCompound originalNbt = new NbtCompound();
+            originalMob.writeNbt(originalNbt);  // Write originalMob's data into the NBT compound
+            System.out.println("Original Mob NBT: " + originalNbt.toString());
+
+            // Clear unnecessary data to prevent conflicts (e.g., UUID and Position)
+            originalNbt.remove("UUID");
+            originalNbt.remove("Pos");
+            originalNbt.putBoolean("Invulnerable", false);
+            originalMob.setInvulnerable(false);
+            originalNbt.putBoolean("NoGravity", false);
+            originalNbt.remove("OnGround");
+            originalNbt.remove("Health");
+            originalNbt.putBoolean("PersistenceRequired", false);
+            originalNbt.remove("Motion");
+
+            // Read the NBT data into the new entity
+            newMob.readNbt(originalNbt);
+
+            // Step 3: Set position and orientation
+            newMob.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
+
+            // Step 4: Spawn the new entity in the world
+            player.getWorld().spawnEntity(newMob);
+
+            // Remove the original mob entity from the world if necessary
+            originalMob.discard();
+        }
+
 
         if (newMob != null) {
-            newMob.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
+            newMob.setHealth(originalMob.getHealth());
+            newMob.setCustomName(originalMob.getCustomName());
+            newMob.setCustomNameVisible(originalMob.isCustomNameVisible());
 
             // Step 2: Transfer player’s equipment to the mob
             newMob.equipStack(EquipmentSlot.MAINHAND, player.getInventory().getStack(0));
@@ -76,6 +125,7 @@ public class MorphService {
             player.getWorld().spawnEntity(newMob);
         }
         removeMorphAttributes(player);
+        player.changeGameMode(GameMode.SPECTATOR);
     }
 
     public static void removeMorphAttributes(ServerPlayerEntity player) {
@@ -93,25 +143,39 @@ public class MorphService {
         ((PlayerExtension) player).setInhabiting(false);
 
         // Step 5: Set player to Spectator mode
-        player.changeGameMode(GameMode.SPECTATOR);
+        //player.changeGameMode(GameMode.SPECTATOR);
     }
     // Other methods remain unchanged...
 
-    private static void morphPlayerToMob(ServerPlayerEntity player, Identifier mobId) {
-        System.out.println("Morphing player to mob: " + mobId);
-        // Retrieve the EntityType based on the Identifier
+    private static void activateMorph(ServerPlayerEntity player, LivingEntity targetMob) {
+        EntityType<?> mobType = targetMob.getType();
+        Identifier mobId = Registries.ENTITY_TYPE.getId(mobType);
         EntityType<?> entityType = Registries.ENTITY_TYPE.get(mobId);
 
         // Create an instance of the mob
         Entity createdEntity = entityType.create(player.getWorld());
 
         // Check if the created entity is a LivingEntity (which is needed for identity)
-        if (createdEntity instanceof LivingEntity livingEntity) {
+        //if (targetMob instanceof LivingEntity livingEntity) {
             // Convert the LivingEntity to IdentityType
-            IdentityType<LivingEntity> identityType = new IdentityType<>(livingEntity);
-
+            IdentityType<LivingEntity> identityType = new IdentityType<>(targetMob);
             // Update the player's identity using the Identity mod's method
-            PlayerIdentity.updateIdentity(player, identityType, livingEntity);
+            //removeTargetsForMob(player, targetMob);
+            PlayerIdentity.updateIdentity(player, identityType, targetMob);
+        //}
+    }
+
+    private static void removeTargetsForMob(ServerPlayerEntity player, LivingEntity targetMob) {
+        // Get all entities in a certain radius around the player
+        for (Entity nearbyEntity : player.getWorld().getEntitiesByClass(MobEntity.class, targetMob.getBoundingBox().expand(50), mobEntity -> true)) {
+            if (nearbyEntity instanceof MobEntity mob) {
+                // If this entity is targeting the targetMob, clear the target
+                if (mob.getTarget() == targetMob) {
+                    mob.setTarget(null);
+                    mob.setAttacking(false);
+                    mob.setAttacker(null);
+                }
+            }
         }
     }
 

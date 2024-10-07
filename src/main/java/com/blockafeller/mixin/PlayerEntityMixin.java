@@ -1,14 +1,13 @@
 package com.blockafeller.mixin;
 
-import com.blockafeller.ability.AbilityStickListener;
 import com.blockafeller.inventory.InventoryFiller;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.ProjectileRefill;
 import com.blockafeller.morph.MorphUtil;
 import draylar.identity.api.platform.IdentityConfig;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Map;
-
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin implements PlayerExtension {
     @Unique
@@ -33,6 +30,9 @@ public class PlayerEntityMixin implements PlayerExtension {
 
     @Unique
     private Identifier inhabitedMobType = null;
+
+    @Unique
+    private LivingEntity inhabitedMobEntity = null;
 
     @Override
     public boolean isInhabiting() {
@@ -53,6 +53,16 @@ public class PlayerEntityMixin implements PlayerExtension {
     @Override
     public void setInhabitedMobType(Identifier mobType) {
         this.inhabitedMobType = mobType;
+    }
+
+    @Override
+    public LivingEntity getInhabitedMobEntity() {
+        return inhabitedMobEntity;
+    }
+
+    @Override
+    public void setInhabitedMobEntity(LivingEntity entity) {
+        this.inhabitedMobEntity = entity;
     }
 
     @Inject(method = "dropItem*", at = @At("HEAD"), cancellable = true)

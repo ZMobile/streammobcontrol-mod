@@ -30,7 +30,7 @@ public class InventoryFiller {
         for (int i = 0; i < player.getInventory().size(); i++) {
             if (i == 8 && !ConfigManager.getConfig().isKickCycle()) {
                 ItemStack itemStack = MorphUtil.createReverseMorphKey();
-                itemStack.setCustomName(Text.literal("Leave Morph and Return to Lobby"));
+                itemStack.setCustomName(Text.literal("Leave Morph and Return to Spectator"));
                 player.getInventory().setStack(i, itemStack);
                 continue;
             }
@@ -191,9 +191,6 @@ public class InventoryFiller {
             // Replace the inventory slot with the custom-named paper
             player.getInventory().setStack(i, item);
         }
-
-        // Force the player to select slot 0 (first hotbar slot) as the active slot
-        player.getInventory().selectedSlot = 0;
     }
 
     private static ItemStack createNamedPotion(Item potionType, String customName, Potion potionEffect) {

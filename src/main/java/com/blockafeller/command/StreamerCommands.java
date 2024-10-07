@@ -15,6 +15,7 @@ import net.minecraft.util.Formatting;
 public class StreamerCommands {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("streamer")
+                .requires(source -> source.hasPermissionLevel(2))  // Requires OP permissions (level 2 or higher)
                 // "add" sub-command
                 .then(CommandManager.literal("add")
                         .then(CommandManager.argument("playerName", StringArgumentType.string())

@@ -45,7 +45,7 @@ public class CreeperFoodHandler {
     /**
      * Check if the player is currently a creeper.
      */
-    private static boolean isCreeper(PlayerEntity player) {
+    public static boolean isCreeper(PlayerEntity player) {
         // Use the Identity mod or your custom check to see if the player is morphed as a creeper
         if (!((PlayerExtension) player).isInhabiting()) {
             return false;
@@ -56,7 +56,7 @@ public class CreeperFoodHandler {
     /**
      * Check if the item is a special pufferfish with the NBT tag `CustomFood: "creeper_food"`.
      */
-    private static boolean isCreeperFood(ItemStack stack) {
+    public static boolean isCreeperFood(ItemStack stack) {
         if (stack.getItem() == Items.PUFFERFISH) {
             NbtCompound nbt = stack.getNbt();
             return nbt != null && "creeper_food".equals(nbt.getString("CustomFood"));

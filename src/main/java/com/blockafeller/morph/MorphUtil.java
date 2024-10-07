@@ -68,6 +68,7 @@ public class MorphUtil {
     }
 
     public static boolean isReverseMorphKey(ItemStack stack) {
+        System.out.println("Checking if item is a Reverse Morph Key: " + stack);
         return stack.hasNbt() && stack.getNbt().getBoolean("ReverseMorphKey");
     }
 

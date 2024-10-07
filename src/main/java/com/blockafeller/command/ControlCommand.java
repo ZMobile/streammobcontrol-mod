@@ -34,11 +34,14 @@ public class ControlCommand {
                                         Identifier mobId = RegistryEntryArgumentType.getSummonableEntityType(context, "mob_id").registryKey().getValue();
 
                                         morphPlayerToMob(player, mobId);
+
                                         ((PlayerExtension) player).setInhabitedMobType(mobId);
                                         ((PlayerExtension) player).setInhabiting(false);
                                         InventoryFiller.fillInventoryWithPapers(player);
+
                                         ((PlayerExtension) player).setInhabiting(true);
                                         System.out.println("Inhabiting: " + ((PlayerExtension) player).isInhabiting());
+
                                         // Morph the player into the specified mob
                                         player.sendMessage(Text.of("You are now controlling: " + mobId.toString()), false);
                                     } catch (Exception e) {
@@ -59,9 +62,9 @@ public class ControlCommand {
         if (createdEntity instanceof LivingEntity livingEntity) {
             // Convert the LivingEntity to IdentityType
             IdentityType<LivingEntity> identityType = new IdentityType<>(livingEntity);
-
             // Update the player's identity using the Identity mod's method
             PlayerIdentity.updateIdentity(player, identityType, livingEntity);
+            // Retrieve the EntityType based on the Identifier
         }
     }
 }
