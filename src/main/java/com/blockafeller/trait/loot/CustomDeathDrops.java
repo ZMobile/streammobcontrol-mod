@@ -94,7 +94,9 @@ public class CustomDeathDrops {
 
             // Generate and drop loot
             List<ItemStack> loot = lootTable.generateLoot(parameterSet);
-            if (lootTableId.equals("minecraft:entities/creeper") && damageSource.getAttacker() instanceof SkeletonEntity) {
+            if (lootTableId.equals("minecraft:entities/creeper")
+                    && (damageSource.getAttacker() instanceof SkeletonEntity || (
+                    damageSource.getAttacker() instanceof PlayerEntity playerAttacker && ((PlayerExtension) playerAttacker).isInhabiting() && ((PlayerExtension) playerAttacker).getInhabitedMobType().toString().equals("minecraft:skeleton")))) {
                 Item[] c418Discs = new Item[]{
                         Items.MUSIC_DISC_13,
                         Items.MUSIC_DISC_CAT,
