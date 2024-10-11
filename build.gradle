@@ -62,6 +62,8 @@ dependencies {
 	modImplementation include ("dev.draylar.omega-config:omega-config-base:1.4.0+1.20.1") {
 		exclude group: "net.fabricmc.fabric-api"
 	}
+
+	implementation 'org.java-websocket:Java-WebSocket:1.5.7'
 }
 
 processResources {

@@ -48,7 +48,7 @@ public abstract class CreeperEntityMixin extends LivingEntity {
                 if (killer instanceof PlayerEntity player && ((PlayerExtension)player).isInhabiting() && ((PlayerExtension)player).getInhabitedMobType().equals(new Identifier("minecraft:skeleton"))) {
                     Item[] c418Discs = new Item[]{
                             Items.MUSIC_DISC_13,
-                            Items.MUSIC_DISC_CAT,
+                            Items.MUSIC_DISC_CAT,  
                             Items.MUSIC_DISC_BLOCKS,
                             Items.MUSIC_DISC_CHIRP,
                             Items.MUSIC_DISC_FAR,
