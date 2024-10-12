@@ -1,18 +1,12 @@
-package com.blockafeller.twitch;
+package com.blockafeller.twitch.memory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.world.PersistentState;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class AuthDataManager {
     public static final String PLAYER_AUTH_DATA_FILE_NAME = "player_auth_data.json";

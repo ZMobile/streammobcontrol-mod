@@ -1,7 +1,4 @@
-package com.blockafeller.twitch;
-
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.world.PersistentState;
+package com.blockafeller.twitch.memory;
 
 import java.util.HashMap;
 import java.util.Map;

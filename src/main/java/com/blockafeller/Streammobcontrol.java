@@ -3,7 +3,10 @@ package com.blockafeller;
 import com.blockafeller.ability.AbilityPacketOverride;
 import com.blockafeller.ability.AbilityListener;
 import com.blockafeller.ability.CreeperFoodHandler;
+import com.blockafeller.ability.IdentityPacketOverride;
 import com.blockafeller.command.*;
+import com.blockafeller.command.twitch.AuthenticateCommand;
+import com.blockafeller.command.twitch.TwitchAppClientIdSetterCommand;
 import com.blockafeller.compass.TrackingCompassMod;
 import com.blockafeller.config.ConfigManager;
 import com.blockafeller.extension.PlayerExtension;
@@ -18,6 +21,8 @@ import com.blockafeller.trait.damage.MobDamageManager;
 import com.blockafeller.trait.hunger.MobHungerManager;
 import com.blockafeller.trait.loot.CustomDeathDrops;
 import com.blockafeller.trait.loot.ItemDropRemover;
+import com.blockafeller.twitch.MinecraftTwitchMessengerService;
+import com.blockafeller.twitch.memory.AuthDataManager;
 import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.ParseResults;
 import net.fabricmc.api.ModInitializer;
@@ -74,6 +79,7 @@ public class Streammobcontrol implements ModInitializer {
 		});
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			ConfigManager.loadConfig();
+			AuthDataManager.loadPlayerAuthData();
 		});
 
 		// Register the event listener
@@ -105,6 +111,9 @@ public class Streammobcontrol implements ModInitializer {
 
 			KickCycleCommand.register(dispatcher);
 			GracePeriodCommand.register(dispatcher);
+
+			TwitchAppClientIdSetterCommand.register(dispatcher);
+			AuthenticateCommand.register(dispatcher);
 		});
 		//ServerLifecycleEvents.SERVER_STARTING.register(this::setupCustomLobbyWorld);
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -126,6 +135,7 @@ public class Streammobcontrol implements ModInitializer {
 		GracePeriodTimeTracker.register();
 
 		AbilityPacketOverride.register();
+		IdentityPacketOverride.register();
 		ItemDropRemover.register();
 
 		TrackingCompassMod.register();

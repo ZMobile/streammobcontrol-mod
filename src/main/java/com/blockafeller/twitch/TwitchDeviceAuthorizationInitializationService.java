@@ -1,5 +1,6 @@
 package com.blockafeller.twitch;
 
+import com.blockafeller.config.ConfigManager;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -14,10 +15,13 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class TwitchDeviceAuthorizationInitializationService {
-    private String clientId = "YOUR_CLIENT_ID"; // Your application's Client ID
-    private String streamerScopes = "bits:read channel:read:redemptions";
+    private static String streamerScopes = "bits:read channel:read:redemptions";
 
-    public String requestStreamerAuthentication() throws Exception {
+    public static TwitchAuthorizationInitializationData requestStreamerAuthentication() throws Exception {
+        String clientId = ConfigManager.getConfig().getTwitchAppClientId();
+        if (clientId == null) {
+            throw new Exception("Twitch App Client ID is not set in the config file.");
+        }
         URL url = new URL("https://id.twitch.tv/oauth2/device");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -45,12 +49,13 @@ public class TwitchDeviceAuthorizationInitializationService {
         // Parse the JSON response using Gson
         Gson gson = new Gson();
         JsonObject jsonResponse = gson.fromJson(response.toString(), JsonObject.class);
+        System.out.println("Response: " + response.toString());
 
         String deviceCode = jsonResponse.get("device_code").getAsString();
-        /*String userCode = jsonResponse.get("user_code").getAsString();
+        String userCode = jsonResponse.get("user_code").getAsString();
         String verificationUri = jsonResponse.get("verification_uri").getAsString();
         int expiresIn = jsonResponse.get("expires_in").getAsInt();
-        int interval = jsonResponse.get("interval").getAsInt();*/
-        return deviceCode;
+        int interval = jsonResponse.get("interval").getAsInt();
+        return new TwitchAuthorizationInitializationData(deviceCode, expiresIn, interval, userCode, verificationUri);
     }
 }
