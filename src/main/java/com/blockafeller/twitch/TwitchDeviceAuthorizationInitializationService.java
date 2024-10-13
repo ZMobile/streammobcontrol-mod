@@ -15,9 +15,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class TwitchDeviceAuthorizationInitializationService {
-    private static String streamerScopes = "bits:read channel:read:redemptions";
+    private static String streamerScopes = "bits:read channel:read:redemptions user:read:email";
+    private static String viewerScopes = "user:read:email";
 
-    public static TwitchAuthorizationInitializationData requestStreamerAuthentication() throws Exception {
+    public static TwitchAuthorizationInitializationData requestAuthentication(String scopes) throws Exception {
         String clientId = ConfigManager.getConfig().getTwitchAppClientId();
         if (clientId == null) {
             throw new Exception("Twitch App Client ID is not set in the config file.");
@@ -29,7 +30,7 @@ public class TwitchDeviceAuthorizationInitializationService {
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         String params = "client_id=" + URLEncoder.encode(clientId, "UTF-8") +
-                "&scope=" + URLEncoder.encode(streamerScopes, "UTF-8");
+                "&scope=" + URLEncoder.encode(scopes, "UTF-8");
 
         OutputStream os = conn.getOutputStream();
         os.write(params.getBytes(StandardCharsets.UTF_8));
@@ -57,5 +58,13 @@ public class TwitchDeviceAuthorizationInitializationService {
         int expiresIn = jsonResponse.get("expires_in").getAsInt();
         int interval = jsonResponse.get("interval").getAsInt();
         return new TwitchAuthorizationInitializationData(deviceCode, expiresIn, interval, userCode, verificationUri);
+    }
+
+    public static TwitchAuthorizationInitializationData requestStreamerAuthentication() throws Exception {
+        return requestAuthentication(streamerScopes);
+    }
+
+    public static TwitchAuthorizationInitializationData requestViewerAuthentication() throws Exception {
+        return requestAuthentication(viewerScopes);
     }
 }

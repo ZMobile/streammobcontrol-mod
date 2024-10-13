@@ -7,7 +7,7 @@ import net.minecraft.util.Formatting;
 public class MinecraftTwitchMessengerService {
     private static final String VERIFICATION_URL = "https://twitch.tv/activate";
 
-    public static void sendAuthorizationLinkToStreamer(ServerPlayerEntity player, String userCode) {
+    public static void sendAuthorizationLink(ServerPlayerEntity player, String userCode) {
         // Create the base message
         MutableText message = Text.literal("Click ");
 
@@ -37,5 +37,17 @@ public class MinecraftTwitchMessengerService {
 
         // Send the message with the copy-to-clipboard functionality
         player.sendMessage(codeMessage, false);
+    }
+
+    public static void sendAuthorizationOffer(ServerPlayerEntity player) {
+        // Clickable text to start viewer authentication (direct method call, no command)
+        MutableText authLinkViewer = Text.literal("[start viewer authentication]").setStyle(Style.EMPTY
+                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/authenticate viewer"))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to start Twitch viewer authentication process")))
+                .withUnderline(true)
+                .withColor(Formatting.GREEN));
+
+        MutableText viewerMessage = Text.literal("Click ").append(authLinkViewer).append(Text.literal(" to authenticate as a viewer."));
+        player.sendMessage(viewerMessage, false);
     }
 }

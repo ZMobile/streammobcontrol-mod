@@ -7,12 +7,33 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 public class AuthDataManager {
     public static final String PLAYER_AUTH_DATA_FILE_NAME = "player_auth_data.json";
-    private static PlayerAuthData playerAuthData;
+    private static PlayerAuthDataMap playerAuthDataMap = new PlayerAuthDataMap();
 
-    public static void loadPlayerAuthData() {
+    // Synchronize loading and saving within one operation
+    public synchronized static void addPlayerAuthData(UUID minecraftUuid, PlayerAuthData playerAuthData) {
+        // Ensure the latest data is loaded
+        loadPlayerAuthData();
+
+        // Add new data
+        playerAuthDataMap.addAuthData(minecraftUuid, playerAuthData);
+
+        // Save the modified data back to the file
+        savePlayerAuthData();
+    }
+
+    public static boolean hasPlayerAuthData(UUID minecraftUuid) {
+        // Ensure the latest data is loaded
+        loadPlayerAuthData();
+
+        return playerAuthDataMap.hasAuthData(minecraftUuid);
+    }
+
+    public synchronized static void loadPlayerAuthData() {
         File playerAuthDataFile = getPlayerAuthDataFile();
 
         if (!playerAuthDataFile.exists()) {
@@ -28,23 +49,19 @@ public class AuthDataManager {
 
         // Load the playerAuthData
         try (FileReader reader = new FileReader(playerAuthDataFile)) {
-            playerAuthData = new Gson().fromJson(reader, PlayerAuthData.class);
+            playerAuthDataMap = new Gson().fromJson(reader, PlayerAuthDataMap.class);
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            playerAuthData = new PlayerAuthData();
+            playerAuthDataMap = new PlayerAuthDataMap();
             savePlayerAuthData();
         }
     }
 
-    public static void savePlayerAuthData() {
+    public synchronized static void savePlayerAuthData() {
         try (FileWriter writer = new FileWriter(getPlayerAuthDataFile())) {
-            new Gson().toJson(playerAuthData, writer);
+            new Gson().toJson(playerAuthDataMap, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static PlayerAuthData getPlayerAuthData() {
-        return playerAuthData;
     }
 
     private static File getPlayerAuthDataFile() {

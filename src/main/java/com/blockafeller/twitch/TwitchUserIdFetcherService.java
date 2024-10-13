@@ -1,5 +1,6 @@
 package com.blockafeller.twitch;
 
+import com.blockafeller.twitch.memory.PlayerAuthData;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -24,7 +25,9 @@ public class TwitchUserIdFetcherService {
         // Add other fields as needed
     }
 
-    public String fetchUserTwitchId(String clientId, String accessToken) {
+    public static PlayerAuthData fetchUserTwitchId(String clientId, String accessToken) {
+        String twitchLogin = null;
+        String displayName = null;
         String twitchUserId = null;
         try {
             // Create the URL object
@@ -60,12 +63,14 @@ public class TwitchUserIdFetcherService {
                 if (!userResponse.data.isEmpty()) {
                     UserData userData = userResponse.data.get(0);
 
-                    //String twitchLogin = userData.login;
-                    //String displayName = userData.displayName;
+                    twitchLogin = userData.login;
+                    displayName = userData.displayName;
                     //String profileImageUrl = userData.profileImageUrl;
                     // Now you can link the Twitch ID with the viewer's Minecraft account
                     //linkViewerTwitchAccount(minecraftUUID, twitchUserId, twitchLogin, displayName);
                     twitchUserId = userData.id;
+
+
 
                     // Inform the viewer that their account has been linked
                     System.out.println("[Mod] Your Twitch account has been linked successfully!");
@@ -91,6 +96,9 @@ public class TwitchUserIdFetcherService {
             e.printStackTrace();
             System.out.println("[Mod] An unexpected error occurred.");
         }
-        return twitchUserId;
+        if (twitchUserId != null) {
+            return new PlayerAuthData(twitchUserId, twitchLogin, displayName);
+        }
+        return null;
     }
 }

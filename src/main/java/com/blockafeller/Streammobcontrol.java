@@ -23,6 +23,7 @@ import com.blockafeller.trait.loot.CustomDeathDrops;
 import com.blockafeller.trait.loot.ItemDropRemover;
 import com.blockafeller.twitch.MinecraftTwitchMessengerService;
 import com.blockafeller.twitch.memory.AuthDataManager;
+import com.blockafeller.twitch.memory.ViewerDonationDataManager;
 import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.ParseResults;
 import net.fabricmc.api.ModInitializer;
@@ -80,6 +81,7 @@ public class Streammobcontrol implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			ConfigManager.loadConfig();
 			AuthDataManager.loadPlayerAuthData();
+			ViewerDonationDataManager.loadViewerDonationData();
 		});
 
 		// Register the event listener
@@ -159,10 +161,12 @@ public class Streammobcontrol implements ModInitializer {
 
 	// Event handler method
 	private void onPlayerJoin(MinecraftServer server, ServerPlayerEntity player) {
-
 		if (!StreamerUtil.isStreamer(player)) {
 			System.out.println("Teleporting to lobby 2");
 			MorphService.returnPlayerToLobby(server, player);
+			if (!AuthDataManager.hasPlayerAuthData(player.getUuid())) {
+				MinecraftTwitchMessengerService.sendAuthorizationOffer(player);
+			}
 		}
 	}
 
