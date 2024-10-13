@@ -5,8 +5,7 @@ import com.blockafeller.ability.AbilityListener;
 import com.blockafeller.ability.CreeperFoodHandler;
 import com.blockafeller.ability.IdentityPacketOverride;
 import com.blockafeller.command.*;
-import com.blockafeller.command.twitch.AuthenticateCommand;
-import com.blockafeller.command.twitch.TwitchAppClientIdSetterCommand;
+import com.blockafeller.command.twitch.*;
 import com.blockafeller.compass.TrackingCompassMod;
 import com.blockafeller.config.ConfigManager;
 import com.blockafeller.extension.PlayerExtension;
@@ -114,8 +113,16 @@ public class Streammobcontrol implements ModInitializer {
 			KickCycleCommand.register(dispatcher);
 			GracePeriodCommand.register(dispatcher);
 
-			TwitchAppClientIdSetterCommand.register(dispatcher);
+			TwitchAppClientConfigCommands.register(dispatcher);
 			AuthenticateCommand.register(dispatcher);
+
+			MobTimeLimitCommand.register(dispatcher);
+			BitsPerMobTimeMinuteCommand.register(dispatcher);
+			MinimumSubTierForMorphingCommand.register(dispatcher);
+			MinimumBitsForMobTimeCommand.register(dispatcher);
+			DefaultSpectatorTimeLimitCommand.register(dispatcher);
+			SpectatorSecondsGrantedForAuthCapacityFailureCommand.register(dispatcher);
+			PunishSpectatorsForIntentionallyFailingToCompleteAuthCommand.register(dispatcher);
 		});
 		//ServerLifecycleEvents.SERVER_STARTING.register(this::setupCustomLobbyWorld);
 		// This code runs as soon as Minecraft is in a mod-load-ready state.

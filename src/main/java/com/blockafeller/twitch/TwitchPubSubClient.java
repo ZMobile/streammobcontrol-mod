@@ -13,14 +13,22 @@ import org.java_websocket.handshake.ServerHandshake;
 
 public class TwitchPubSubClient extends WebSocketClient {
 
-    private final String accessToken;
+    private String accessToken;
+    private String refreshToken;
+    private final String clientId;
+    private final String clientSecret;
     private final String streamerTwitchId;
     private final Gson gson = new Gson();
     private Timer pingTimer;
+    private long expirationTime; // To track when the token expires
 
-    public TwitchPubSubClient(URI serverUri, String accessToken, String streamerTwitchId) {
-        super(serverUri);
-        this.accessToken = accessToken;
+    public TwitchPubSubClient(String clientId, String clientSecret, TwitchTokenData tokenData, String streamerTwitchId) {
+        super(URI.create("wss://pubsub-edge.twitch.tv"));
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.accessToken = tokenData.getAccessToken();
+        this.refreshToken = tokenData.getRefreshToken();
+        this.expirationTime = tokenData.getExpirationTime();
         this.streamerTwitchId = streamerTwitchId;
     }
 
@@ -53,7 +61,7 @@ public class TwitchPubSubClient extends WebSocketClient {
             case "RECONNECT":
                 // Reconnect as instructed
                 System.out.println("[PubSub] Reconnect requested by Twitch");
-                reconnect();
+                reconnectWithTokenCheck();
                 break;
             default:
                 System.out.println("[PubSub] Unknown message type: " + type);
@@ -65,7 +73,8 @@ public class TwitchPubSubClient extends WebSocketClient {
     public void onClose(int code, String reason, boolean remote) {
         System.out.println("[PubSub] Disconnected: " + reason);
         stopPingTimer();
-        // Implement reconnection logic if desired
+        // Attempt reconnection with token check
+        reconnectWithTokenCheck();
     }
 
     @Override
@@ -164,6 +173,14 @@ public class TwitchPubSubClient extends WebSocketClient {
         System.out.println("[PubSub] PING sent");
     }
 
+    private void reconnectWithTokenCheck() {
+        // Check if the access token is about to expire
+        if (System.currentTimeMillis() >= expirationTime - (2 * 60 * 1000)) { // Refresh 2 minutes before expiry
+            refreshAccessToken();
+        }
+        reconnect();
+    }
+
     public void reconnect() {
         // Implement reconnection logic with appropriate delays
         try {
@@ -171,6 +188,19 @@ public class TwitchPubSubClient extends WebSocketClient {
             System.out.println("[PubSub] Reconnected to Twitch PubSub");
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void refreshAccessToken() {
+        System.out.println("[PubSub] Refreshing access token...");
+        TwitchTokenData newTokenData = TwitchAccessTokenRefresherService.refreshAccessToken(clientId, clientSecret, refreshToken);
+        if (newTokenData != null) {
+            this.accessToken = newTokenData.getAccessToken();
+            this.refreshToken = newTokenData.getRefreshToken();
+            this.expirationTime = System.currentTimeMillis() + (newTokenData.getExpirationTime() * 1000); // Set new expiration time
+            System.out.println("[PubSub] Access token refreshed.");
+        } else {
+            System.err.println("[PubSub] Failed to refresh access token.");
         }
     }
 }

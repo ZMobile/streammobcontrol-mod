@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class TwitchAccessTokenRefresherService {
-    public TwitchTokenData refreshAccessToken(String clientId, String clientSecret, String refreshToken) {
+    public static TwitchTokenData refreshAccessToken(String clientId, String clientSecret, String refreshToken) {
         TwitchTokenData tokenData = null;
         try {
             // Create the connection

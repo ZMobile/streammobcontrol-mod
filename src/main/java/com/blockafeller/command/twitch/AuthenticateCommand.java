@@ -1,5 +1,6 @@
 package com.blockafeller.command.twitch;
 
+import com.blockafeller.twitch.TwitchPubSubClient;
 import com.blockafeller.twitch.TwitchStreamerAuthenticationService;
 import com.blockafeller.twitch.TwitchUserAuthenticationService;
 import com.mojang.brigadier.CommandDispatcher;
