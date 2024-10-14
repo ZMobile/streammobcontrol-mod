@@ -63,7 +63,7 @@ dependencies {
 		exclude group: "net.fabricmc.fabric-api"
 	}
 
-	implementation 'org.java-websocket:Java-WebSocket:1.5.7'
+	modImplementation 'org.java-websocket:Java-WebSocket:1.5.7'
 }
 
 processResources {

@@ -21,13 +21,15 @@ public class PlayerTimeTracker {
     public static void register() {
         // Listen for the end of each server tick to track time
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            tickCounter++;
+            if (ConfigManager.getConfig().isMobTimeLimitEnabled()) {
+                tickCounter++;
 
-            // Run the decrement logic every 20 ticks (1 second)
-            if (tickCounter >= 20) {
-                tickCounter = 0; // Reset tick counter after each second
-                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                    handleTimeDecrement(player);
+                // Run the decrement logic every 20 ticks (1 second)
+                if (tickCounter >= 20) {
+                    tickCounter = 0; // Reset tick counter after each second
+                    for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                        handleTimeDecrement(player);
+                    }
                 }
             }
         });

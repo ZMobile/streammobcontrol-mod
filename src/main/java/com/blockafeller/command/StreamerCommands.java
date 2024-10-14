@@ -21,12 +21,11 @@ public class StreamerCommands {
                 .then(CommandManager.literal("add")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(context -> {
-                                    String playerName = StringArgumentType.getString(context, "playerName");
-                                    ServerPlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+                                    ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
 
                                     if (player != null) {
                                         addPlayerToStreamerTeam(player);
-                                        context.getSource().sendFeedback(() -> Text.literal(playerName + " added as a streamer").formatted(Formatting.GREEN), true);
+                                        context.getSource().sendFeedback(() -> Text.literal(player.getEntityName() + " added as a streamer").formatted(Formatting.GREEN), true);
                                     } else {
                                         context.getSource().sendError(Text.literal("Player not found").formatted(Formatting.RED));
                                     }
@@ -36,12 +35,11 @@ public class StreamerCommands {
                 .then(CommandManager.literal("remove")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(context -> {
-                                    String playerName = StringArgumentType.getString(context, "playerName");
-                                    ServerPlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+                                    ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
 
                                     if (player != null) {
                                         removePlayerFromStreamerTeam(player);
-                                        context.getSource().sendFeedback(() -> Text.literal(playerName + " removed as a streamer").formatted(Formatting.GREEN), false);
+                                        context.getSource().sendFeedback(() -> Text.literal(player.getEntityName() + " removed as a streamer").formatted(Formatting.GREEN), false);
                                     } else {
                                         context.getSource().sendError(Text.literal("Player not found").formatted(Formatting.RED));
                                     }
