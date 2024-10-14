@@ -1,6 +1,8 @@
 package com.blockafeller.twitch.memory;
 
+import com.blockafeller.util.gson.LocalDateTimeTypeAdapterFactory;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,20 +15,23 @@ import java.util.UUID;
 public class ViewerDonationDataManager {
     public static final String VIEWER_DONATION_DATA_FILE_NAME = "viewer_donation_data.json";
     private static ViewerDonationDataMap viewerDonationDataMap = new ViewerDonationDataMap();
+    private static Gson gson = new GsonBuilder()
+            .registerTypeAdapterFactory(new LocalDateTimeTypeAdapterFactory())
+            .create();
 
     public static ViewerDonationDataMap getViewerDonationDataMap() {
         return viewerDonationDataMap;
     }
 
     // Synchronize loading and saving within one operation
-    public synchronized static void putViewerDonationData(String twitchUserId, ViewerDonationData viewerDonationData) {
+    public static void putViewerDonationData(String twitchUserId, ViewerDonationData viewerDonationData) {
         viewerDonationDataMap.putViewerDonationData(twitchUserId, viewerDonationData);
 
         // Save the modified data back to the file
         saveViewerDonationData();
     }
 
-    public synchronized static void loadViewerDonationData() {
+    public static void loadViewerDonationData() {
         File viewerDonationDataFile = getViewerDonationDataFile();
 
         if (!viewerDonationDataFile.exists()) {
@@ -42,18 +47,16 @@ public class ViewerDonationDataManager {
 
         // Load the viewerDonationData
         try (FileReader reader = new FileReader(viewerDonationDataFile)) {
-            viewerDonationDataMap = new Gson().fromJson(reader, ViewerDonationDataMap.class);
+            viewerDonationDataMap = gson.fromJson(reader, ViewerDonationDataMap.class);
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             viewerDonationDataMap = new ViewerDonationDataMap();
             saveViewerDonationData();
         }
     }
 
-    public synchronized static void saveViewerDonationData() {
-        File tempFile = new File(getViewerDonationDataFile().getPath() + ".tmp");
-        try (FileWriter writer = new FileWriter(tempFile)) {
-            new Gson().toJson(viewerDonationDataMap, writer);
-            Files.move(tempFile.toPath(), getViewerDonationDataFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+    public static void saveViewerDonationData() {
+        try (FileWriter writer = new FileWriter(getViewerDonationDataFile())) {
+            gson.toJson(viewerDonationDataMap, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }

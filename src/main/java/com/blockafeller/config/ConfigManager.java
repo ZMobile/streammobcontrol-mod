@@ -1,6 +1,8 @@
 package com.blockafeller.config;
 
+import com.blockafeller.util.gson.LocalDateTimeTypeAdapterFactory;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
@@ -11,6 +13,9 @@ import java.nio.file.Files;
 public class ConfigManager {
     private static final String CONFIG_FILE_NAME = "mob_control_mod_config.json";
     private static ModConfig config;
+    private static Gson gson = new GsonBuilder()
+            .registerTypeAdapterFactory(new LocalDateTimeTypeAdapterFactory())
+            .create();
 
     public static void loadConfig() {
         File configFile = getConfigFile();
@@ -28,7 +33,7 @@ public class ConfigManager {
 
         // Load the config
         try (FileReader reader = new FileReader(configFile)) {
-            config = new Gson().fromJson(reader, ModConfig.class);
+            config = gson.fromJson(reader, ModConfig.class);
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             config = new ModConfig();
             saveConfig();
@@ -37,7 +42,7 @@ public class ConfigManager {
 
     public static void saveConfig() {
         try (FileWriter writer = new FileWriter(getConfigFile())) {
-            new Gson().toJson(config, writer);
+            gson.toJson(config, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }

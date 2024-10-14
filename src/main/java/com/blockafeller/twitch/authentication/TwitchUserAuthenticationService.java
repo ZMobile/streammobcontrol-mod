@@ -2,6 +2,8 @@ package com.blockafeller.twitch.authentication;
 
 import com.blockafeller.config.ConfigManager;
 import com.blockafeller.twitch.*;
+import com.blockafeller.twitch.donation.TwitchBitsProcessorService;
+import com.blockafeller.twitch.donation.TwitchSubscriptionExpirationCheckerService;
 import com.blockafeller.twitch.memory.PlayerAuthDataManager;
 import com.blockafeller.twitch.memory.PlayerAuthData;
 import com.google.gson.Gson;
@@ -43,9 +45,17 @@ public class TwitchUserAuthenticationService {
                                 System.out.println("Token data: " + new Gson().toJson(tokenData));
                                 PlayerAuthData playerAuthData = TwitchUserIdFetcherService.fetchUserTwitchId(clientId, tokenData.getAccessToken());
                                 System.out.println("Player auth data: " + new Gson().toJson(playerAuthData));
+                                if (playerAuthData == null || playerAuthData.getResponseCode() != 200) {
+                                    serverPlayerEntity.sendMessage(Text.literal("Failed to retrieve user ID."));
+                                    if (playerAuthData != null) {
+                                        serverPlayerEntity.sendMessage(Text.literal("Response code: " + playerAuthData.getResponseCode()));
+                                    }
+                                    return;
+                                }
                                 playerAuthData.setResponseCode(null);
                                 PlayerAuthDataManager.addPlayerAuthData(serverPlayerEntity.getUuid(), playerAuthData);
-                                System.out.println("This gets called 4");
+                                TwitchSubscriptionExpirationCheckerService.checkSubscriptions(serverPlayerEntity);
+                                TwitchBitsProcessorService.processBitsIntoMobTime(serverPlayerEntity);
                                 serverPlayerEntity.sendMessage(Text.literal("Authentication Successful!"));
                             } else {
                                 serverPlayerEntity.sendMessage(Text.literal("Failed to retrieve access token."));

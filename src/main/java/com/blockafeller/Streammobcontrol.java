@@ -21,6 +21,7 @@ import com.blockafeller.trait.hunger.MobHungerManager;
 import com.blockafeller.trait.loot.CustomDeathDrops;
 import com.blockafeller.trait.loot.ItemDropRemover;
 import com.blockafeller.twitch.MinecraftTwitchMessengerService;
+import com.blockafeller.twitch.donation.TwitchSubscriptionExpirationCheckerService;
 import com.blockafeller.twitch.memory.PlayerAuthDataManager;
 import com.blockafeller.twitch.memory.ViewerDonationDataManager;
 import com.blockafeller.util.StreamerUtil;
@@ -174,6 +175,7 @@ public class Streammobcontrol implements ModInitializer {
 			if (!PlayerAuthDataManager.getPlayerAuthDataMap().hasAuthData(player.getUuid())) {
 				MinecraftTwitchMessengerService.sendAuthorizationOffer(player);
 			}
+			TwitchSubscriptionExpirationCheckerService.checkSubscriptions(player);
 		}
 	}
 

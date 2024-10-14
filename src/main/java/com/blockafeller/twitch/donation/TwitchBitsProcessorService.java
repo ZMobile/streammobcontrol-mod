@@ -1,4 +1,4 @@
-package com.blockafeller.twitch;
+package com.blockafeller.twitch.donation;
 
 import com.blockafeller.config.ConfigManager;
 import com.blockafeller.time.PlayerTimeData;
@@ -49,6 +49,7 @@ public class TwitchBitsProcessorService {
 
         ViewerDonationDataManager.putViewerDonationData(playerAuthData.getTwitchUserId(), viewerDonationData);
 
+        ViewerDonationDataManager.saveViewerDonationData();
         player.sendMessage(Text.literal("Processed " + bitsBeingProcessed + " to add " + mobTimeSecondsToAdd + " seconds of mob time."));
     }
 }

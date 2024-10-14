@@ -1,13 +1,17 @@
 package com.blockafeller.twitch.memory;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 public class ViewerDonationData {
     private String twitchUserId;
     private int totalBitsDonated;
     private int totalBitsProcessedIntoMobTime;
     private boolean isSubscribed;
+    private LocalDateTime subscriptionExpirationTime;
     private int subscriptionTier;  // 0: not subscribed, 1: Tier 1, 2: Tier 2, 3: Tier 3
     private int sessionBitsDonated;  // Bits donated during the current stream session
-    private long lastDonationTimestamp;  // Unix timestamp for the last donation
+    private LocalDateTime lastDonationTimestamp;  // Unix timestamp for the last donation
 
     // Constructors, getters, setters, etc.
 
@@ -18,7 +22,7 @@ public class ViewerDonationData {
         this.isSubscribed = false;
         this.subscriptionTier = 0;
         this.sessionBitsDonated = 0;
-        this.lastDonationTimestamp = 0;
+        this.lastDonationTimestamp = null;
     }
 
     // Getters and Setters
@@ -34,10 +38,10 @@ public class ViewerDonationData {
         return totalBitsDonated;
     }
 
-    public void addBitsDonated(int bits) {
+    public synchronized void addBitsDonated(int bits) {
         this.totalBitsDonated += bits;
         this.sessionBitsDonated += bits;
-        this.lastDonationTimestamp = System.currentTimeMillis();
+        this.lastDonationTimestamp = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public int getTotalBitsProcessedIntoMobTime() {
@@ -52,9 +56,42 @@ public class ViewerDonationData {
         return isSubscribed;
     }
 
-    public void setSubscribed(boolean isSubscribed, int tier) {
-        this.isSubscribed = isSubscribed;
+    public synchronized void addSubscription(int tier) {
+        this.isSubscribed = true;
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+
+        // Update subscription tier based on the new tier
+        if (tier >= this.subscriptionTier) {
+            // Set to higher tier if upgrading or renewing at the same tier
+            this.subscriptionTier = tier;
+        }
+
+        // Reset the expiration time based on the new tier
+        if (this.subscriptionExpirationTime == null || this.subscriptionExpirationTime.isBefore(now)) {
+            this.subscriptionExpirationTime = now.plusMonths(1);
+        } else {
+            // Extend the subscription if adding time
+            this.subscriptionExpirationTime = this.subscriptionExpirationTime.plusMonths(1);
+        }
+
+        // Update last donation timestamp (if necessary for your logic)
+        this.lastDonationTimestamp = now;
+    }
+
+    public synchronized void setSubscribed(boolean subscribed) {
+        this.isSubscribed = subscribed;
+    }
+
+    public synchronized void setSubscriptionTier(int tier) {
         this.subscriptionTier = tier;
+    }
+
+    public LocalDateTime getSubscriptionExpirationTime() {
+        return subscriptionExpirationTime;
+    }
+
+    public void setSubscriptionExpirationTime(LocalDateTime subscriptionExpirationTime) {
+        this.subscriptionExpirationTime = subscriptionExpirationTime;
     }
 
     public int getSubscriptionTier() {
@@ -69,7 +106,7 @@ public class ViewerDonationData {
         this.sessionBitsDonated = 0;
     }
 
-    public long getLastDonationTimestamp() {
+    public LocalDateTime getLastDonationTimestamp() {
         return lastDonationTimestamp;
     }
 }

@@ -1,5 +1,9 @@
 package com.blockafeller.twitch;
 
+import com.blockafeller.twitch.donation.TwitchBitsProcessorService;
+import com.blockafeller.twitch.memory.ViewerDonationData;
+import com.blockafeller.twitch.memory.ViewerDonationDataManager;
+import com.blockafeller.twitch.memory.ViewerDonationDataMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -139,12 +143,16 @@ public class TwitchPubSubClient extends WebSocketClient {
         String userId = data.get("user_id").getAsString();
         String userName = data.get("user_name").getAsString();
         int bitsUsed = data.get("bits_used").getAsInt();
-        String chatMessage = data.get("chat_message").getAsString();
-
+        ViewerDonationDataMap viewerDonationDataMap = ViewerDonationDataManager.getViewerDonationDataMap();
+        ViewerDonationData viewerDonationData = viewerDonationDataMap.getViewerDonationData(userId);
+        if (viewerDonationData == null) {
+            viewerDonationData = new ViewerDonationData(userId);
+            viewerDonationDataMap.putViewerDonationData(userId, viewerDonationData);
+        }
+        viewerDonationData.addBitsDonated(bitsUsed);
+        ViewerDonationDataManager.saveViewerDonationData();
+        TwitchBitsProcessorService.processBitsIntoMobTime(authenticatedPlayer);
         System.out.println("[PubSub] Bits Event: " + userName + " cheered " + bitsUsed + " bits.");
-
-        // Implement your logic here
-        // Example: rewardPlayer(userId, bitsUsed);
     }
 
     private void handleSubscriptionEvent(JsonObject content) {
@@ -155,10 +163,40 @@ public class TwitchPubSubClient extends WebSocketClient {
         String subPlanName = subData.get("sub_plan_name").getAsString();
         boolean isGift = subData.get("is_gift").getAsBoolean();
 
-        System.out.println("[PubSub] Subscription Event: " + userName + " subscribed with plan " + subPlanName);
+        String gifteeUserId = userId;  // Default to the gifter, but this will change if it's a gift
+        String gifteeUserName = userName;
 
-        // Implement your logic here
-        // Example: rewardSubscriber(userId, subPlan);
+        // If it's a gifted subscription, extract the recipient's information
+        if (isGift) {
+            gifteeUserId = subData.get("recipient_id").getAsString();
+            gifteeUserName = subData.get("recipient_display_name").getAsString();
+            System.out.println("[PubSub] Gifted Subscription: " + userName + " gifted a subscription to " + gifteeUserName);
+        } else {
+            System.out.println("[PubSub] Subscription Event: " + userName + " subscribed with plan " + subPlanName);
+        }
+
+        System.out.println("[PubSub] Subscription Event: " + userName + " subscribed with plan " + subPlanName);
+        ViewerDonationDataMap viewerDonationDataMap = ViewerDonationDataManager.getViewerDonationDataMap();
+        ViewerDonationData viewerDonationData = viewerDonationDataMap.getViewerDonationData(gifteeUserId);
+        if (viewerDonationData == null) {
+            viewerDonationData = new ViewerDonationData(gifteeUserId);
+            viewerDonationDataMap.putViewerDonationData(gifteeUserId, viewerDonationData);
+        }
+
+        int subTier = mapSubPlanToTier(subPlan);
+        viewerDonationData.addSubscription(subTier);
+
+        ViewerDonationDataManager.saveViewerDonationData();
+    }
+
+    private int mapSubPlanToTier(String subPlan) {
+        return switch (subPlan) {
+            case "1000" -> 1;  // Tier 1
+            case "2000" -> 2;  // Tier 2
+            case "3000" -> 3;  // Tier 3
+            case "Prime" -> 1;  // Treat Prime as Tier 1
+            default -> 1;  // Default to Tier 1 if unknown
+        };
     }
 
     private void startPingTimer() {
