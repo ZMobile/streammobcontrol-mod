@@ -39,7 +39,7 @@ public class MorphEventHandler {
                     if (timeData.getMobTime() > 0) {
                         if (entity instanceof MobEntity targetMob) {
                             if (GracePeriodTimeTracker.getGracePeriodTimeRemaining() > 0) {
-                                player.sendMessage(Text.literal("You can't morph during the grace period! Grace period time remaining:" + GracePeriodTimeTracker.getGracePeriodTimeRemaining()), true);
+                                player.sendMessage(Text.literal("You can't morph during the grace period! Grace period time remaining: " + GracePeriodTimeTracker.getGracePeriodTimeRemaining()), true);
                             } else {
                                 // Get the type of the mob being right-clicked
                                 // Morph into the mob type dynamically

@@ -14,12 +14,12 @@ public class ViewerDonationDataManager {
     public static final String VIEWER_DONATION_DATA_FILE_NAME = "viewer_donation_data.json";
     private static ViewerDonationDataMap viewerDonationDataMap = new ViewerDonationDataMap();
 
+    public static ViewerDonationDataMap getViewerDonationDataMap() {
+        return viewerDonationDataMap;
+    }
+
     // Synchronize loading and saving within one operation
     public synchronized static void putViewerDonationData(String twitchUserId, ViewerDonationData viewerDonationData) {
-        // Ensure the latest data is loaded
-        loadViewerDonationData();
-
-        // Add new data
         viewerDonationDataMap.putViewerDonationData(twitchUserId, viewerDonationData);
 
         // Save the modified data back to the file

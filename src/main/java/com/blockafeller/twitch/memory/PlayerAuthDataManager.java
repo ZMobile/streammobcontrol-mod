@@ -7,30 +7,22 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-public class AuthDataManager {
+public class PlayerAuthDataManager {
     public static final String PLAYER_AUTH_DATA_FILE_NAME = "player_auth_data.json";
     private static PlayerAuthDataMap playerAuthDataMap = new PlayerAuthDataMap();
 
     // Synchronize loading and saving within one operation
     public synchronized static void addPlayerAuthData(UUID minecraftUuid, PlayerAuthData playerAuthData) {
-        // Ensure the latest data is loaded
-        loadPlayerAuthData();
-
-        // Add new data
         playerAuthDataMap.addAuthData(minecraftUuid, playerAuthData);
 
         // Save the modified data back to the file
         savePlayerAuthData();
     }
 
-    public static boolean hasPlayerAuthData(UUID minecraftUuid) {
-        // Ensure the latest data is loaded
-        loadPlayerAuthData();
-
-        return playerAuthDataMap.hasAuthData(minecraftUuid);
+    public static PlayerAuthDataMap getPlayerAuthDataMap() {
+        return playerAuthDataMap;
     }
 
     public synchronized static void loadPlayerAuthData() {
@@ -38,7 +30,7 @@ public class AuthDataManager {
 
         if (!playerAuthDataFile.exists()) {
             // Copy default playerAuthData from resources
-            try (InputStream in = AuthDataManager.class.getClassLoader().getResourceAsStream(PLAYER_AUTH_DATA_FILE_NAME)) {
+            try (InputStream in = PlayerAuthDataManager.class.getClassLoader().getResourceAsStream(PLAYER_AUTH_DATA_FILE_NAME)) {
                 if (in != null) {
                     Files.copy(in, playerAuthDataFile.toPath());
                 }
@@ -63,7 +55,6 @@ public class AuthDataManager {
             e.printStackTrace();
         }
     }
-
     private static File getPlayerAuthDataFile() {
         return new File(FabricLoader.getInstance().getConfigDir().toFile(), PLAYER_AUTH_DATA_FILE_NAME);
     }

@@ -8,11 +8,14 @@ import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 public class TwitchPubSubClient extends WebSocketClient {
-
+    private ServerPlayerEntity authenticatedPlayer;
     private String accessToken;
     private String refreshToken;
     private final String clientId;
@@ -22,25 +25,32 @@ public class TwitchPubSubClient extends WebSocketClient {
     private Timer pingTimer;
     private long expirationTime; // To track when the token expires
 
-    public TwitchPubSubClient(String clientId, String clientSecret, TwitchTokenData tokenData, String streamerTwitchId) {
+    public TwitchPubSubClient(ServerPlayerEntity player, String clientId, String clientSecret, TwitchTokenData tokenData, String streamerTwitchId) {
         super(URI.create("wss://pubsub-edge.twitch.tv"));
+        this.authenticatedPlayer = player;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.accessToken = tokenData.getAccessToken();
         this.refreshToken = tokenData.getRefreshToken();
-        this.expirationTime = tokenData.getExpirationTime();
+        this.expirationTime = System.currentTimeMillis() + (tokenData.getExpirationTime() * 1000);
         this.streamerTwitchId = streamerTwitchId;
+    }
+
+    private boolean isTokenValid() {
+        return System.currentTimeMillis() < expirationTime - (2 * 60 * 1000); // Token valid until 2 minutes before expiry
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         System.out.println("[PubSub] Connected to Twitch PubSub");
-
-        // Send LISTEN command to subscribe to topics
-        sendListenRequest();
-
-        // Start sending PING messages every 4 minutes
-        startPingTimer();
+        // Ensure token is valid before proceeding
+        if (isTokenValid()) {
+            sendListenRequest();
+            startPingTimer();
+        } else {
+            System.out.println("[PubSub] Token expired. Refreshing...");
+            refreshAccessToken();
+        }
     }
 
     @Override
@@ -95,13 +105,15 @@ public class TwitchPubSubClient extends WebSocketClient {
         data.add("topics", topics);
 
         listenRequest.add("data", data);
-
         send(listenRequest.toString());
     }
 
     private void handleResponse(JsonObject message) {
         String error = message.get("error").getAsString();
         if (error.isEmpty()) {
+            authenticatedPlayer.sendMessage(Text.literal("[PubSub] Streamer Authentication Successful! Now listening for bits and subscription events.").formatted(Formatting.GREEN), false);
+            authenticatedPlayer.sendMessage(Text.literal("Note: in order to avoid storing Twitch access tokens, authentication will need to be redone when the server is restarted."), false);
+            authenticatedPlayer.sendMessage(Text.literal("Type \"/stream shutdown\" to halt streamer authentication and subscription / bits event listening."), false);
             System.out.println("[PubSub] Successfully subscribed to topics.");
         } else {
             System.err.println("[PubSub] Failed to subscribe: " + error);
@@ -182,6 +194,7 @@ public class TwitchPubSubClient extends WebSocketClient {
     }
 
     public void reconnect() {
+        new Thread(() -> {
         // Implement reconnection logic with appropriate delays
         try {
             this.reconnectBlocking();
@@ -189,6 +202,7 @@ public class TwitchPubSubClient extends WebSocketClient {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        }).start();
     }
 
     private void refreshAccessToken() {
@@ -202,5 +216,12 @@ public class TwitchPubSubClient extends WebSocketClient {
         } else {
             System.err.println("[PubSub] Failed to refresh access token.");
         }
+    }
+
+    public void shutdown() {
+        System.out.println("[PubSub] Shutting down Twitch PubSub listener.");
+        stopPingTimer(); // Stop the ping timer
+        close(); // Close the WebSocket connection
+        authenticatedPlayer.sendMessage(Text.literal("Streamer event listener has been shut down.").formatted(Formatting.RED), false);
     }
 }

@@ -26,9 +26,11 @@ public class TwitchUserIdFetcherService {
     }
 
     public static PlayerAuthData fetchUserTwitchId(String clientId, String accessToken) {
+
         String twitchLogin = null;
         String displayName = null;
         String twitchUserId = null;
+        Integer responseCode = null;
         try {
             // Create the URL object
             URL url = new URL("https://api.twitch.tv/helix/users");
@@ -44,7 +46,7 @@ public class TwitchUserIdFetcherService {
             conn.setRequestProperty("Client-Id", clientId);
 
             // Get the response code
-            int responseCode = conn.getResponseCode();
+            responseCode = conn.getResponseCode();
 
             if (responseCode == 200) {
                 // Read the response
@@ -97,8 +99,12 @@ public class TwitchUserIdFetcherService {
             System.out.println("[Mod] An unexpected error occurred.");
         }
         if (twitchUserId != null) {
-            return new PlayerAuthData(twitchUserId, twitchLogin, displayName);
+            return new PlayerAuthData(twitchUserId, twitchLogin, displayName, responseCode);
         }
-        return null;
+        if (responseCode != null) {
+           return new PlayerAuthData(responseCode);
+        } else {
+            return null;
+        }
     }
 }

@@ -19,12 +19,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class InventoryFiller {
-    private static final Identifier SKELETON_ID = new Identifier("minecraft", "skeleton");
-    private static final Identifier STRAY_ID = new Identifier("minecraft", "stray");
-    private static final Identifier PILLAGER_ID = new Identifier("minecraft", "pillager");
-    private static final Identifier PIGLIN_ID = new Identifier("minecraft", "piglin");
-
-
     public static void fillInventoryWithPapers(ServerPlayerEntity player) {
         // Iterate over each slot in the player's inventory
         for (int i = 0; i < player.getInventory().size(); i++) {
@@ -168,7 +162,10 @@ public class InventoryFiller {
                         || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:husk")
                         || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:skeleton")
                         || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:stray")
-                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:piglin")) {
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:piglin")
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:zombified_piglin")
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:villager")
+                        || ((PlayerExtension) player).getInhabitedMobType().toString().equals("minecraft:pillager")) {
                     item = new ItemStack(Items.AIR);
                 }
             }

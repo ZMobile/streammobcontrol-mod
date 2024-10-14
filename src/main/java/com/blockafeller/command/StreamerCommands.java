@@ -4,6 +4,7 @@ import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.CommandManager;
@@ -18,14 +19,14 @@ public class StreamerCommands {
                 .requires(source -> source.hasPermissionLevel(2))  // Requires OP permissions (level 2 or higher)
                 // "add" sub-command
                 .then(CommandManager.literal("add")
-                        .then(CommandManager.argument("playerName", StringArgumentType.string())
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(context -> {
                                     String playerName = StringArgumentType.getString(context, "playerName");
                                     ServerPlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
 
                                     if (player != null) {
                                         addPlayerToStreamerTeam(player);
-                                        context.getSource().sendFeedback(() -> Text.literal(playerName + " added as a streamer").formatted(Formatting.GREEN), false);
+                                        context.getSource().sendFeedback(() -> Text.literal(playerName + " added as a streamer").formatted(Formatting.GREEN), true);
                                     } else {
                                         context.getSource().sendError(Text.literal("Player not found").formatted(Formatting.RED));
                                     }
@@ -33,7 +34,7 @@ public class StreamerCommands {
                                 })))
                 // "remove" sub-command
                 .then(CommandManager.literal("remove")
-                        .then(CommandManager.argument("playerName", StringArgumentType.string())
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(context -> {
                                     String playerName = StringArgumentType.getString(context, "playerName");
                                     ServerPlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);

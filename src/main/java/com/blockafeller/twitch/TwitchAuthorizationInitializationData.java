@@ -5,13 +5,15 @@ public class TwitchAuthorizationInitializationData {
     private int interval;
     private String userCode;
     private String verificationUri;
+    private int reponseCode;
 
-    public TwitchAuthorizationInitializationData(String deviceCode, int expiresIn, int interval, String userCode, String verificationUri) {
+    public TwitchAuthorizationInitializationData(String deviceCode, int expiresIn, int interval, String userCode, String verificationUri, int reponseCode) {
         this.deviceCode = deviceCode;
         this.expiresIn = expiresIn;
         this.interval = interval;
         this.userCode = userCode;
         this.verificationUri = verificationUri;
+        this.reponseCode = reponseCode;
     }
 
     public String getDeviceCode() {
@@ -32,5 +34,13 @@ public class TwitchAuthorizationInitializationData {
 
     public String getVerificationUri() {
         return verificationUri;
+    }
+
+    public int getReponseCode() {
+        return reponseCode;
+    }
+
+    public void setDeviceCode(String deviceCode) {
+        this.deviceCode = deviceCode;
     }
 }

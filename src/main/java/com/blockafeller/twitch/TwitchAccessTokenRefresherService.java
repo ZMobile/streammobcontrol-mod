@@ -53,7 +53,7 @@ public class TwitchAccessTokenRefresherService {
                 int newExpiresIn = jsonResponse.get("expires_in").getAsInt();
 
                 // Update stored tokens
-                tokenData = new TwitchTokenData(newAccessToken, newRefreshToken, newExpiresIn);
+                tokenData = new TwitchTokenData(newAccessToken, newRefreshToken, newExpiresIn, responseCode);
 
                 // Output the new tokens (or use them as needed)
                 System.out.println("New Access Token: " + newAccessToken);
