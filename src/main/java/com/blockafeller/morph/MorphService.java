@@ -1,6 +1,7 @@
 package com.blockafeller.morph;
 
 import com.blockafeller.ability.MorphFlightManager;
+import com.blockafeller.config.ConfigManager;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.inventory.InventoryFiller;
 import com.blockafeller.time.PlayerTimeData;
@@ -194,8 +195,9 @@ public class MorphService {
         //player.teleport(0, 100, 0);
         player.changeGameMode(GameMode.SPECTATOR);
         PlayerTimeData  timeManager = PlayerTimeDataManager.getOrCreatePlayerTimeData(player.getUuid(), server);
-        timeManager.setSpectatorTime(180);
-        timeManager.setTotalSpectatorTime(180);
+        int defaultSpectatorTimeLimit = ConfigManager.getConfig().getDefaultSpectatorTimeLimit();
+        timeManager.setSpectatorTime(defaultSpectatorTimeLimit);
+        timeManager.setTotalSpectatorTime(defaultSpectatorTimeLimit);
         String playerName = player.getEntityName();
         //String command = String.format("mw tp %s stream:lobby", playerName);
 

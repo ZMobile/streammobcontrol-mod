@@ -14,7 +14,7 @@ public class ModConfig  {
     private boolean punishSpectatorsForIntentionallyFailingToCompleteAuth;
 
     public ModConfig() {
-        this.kickCycle = true;
+        this.kickCycle = false;
         this.gracePeriodSeconds = 120;
         this.twitchAppClientId = null;
         this.twitchAppClientSecret = null;
