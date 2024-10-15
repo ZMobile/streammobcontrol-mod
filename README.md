@@ -1,6 +1,6 @@
 # Stream Mob Control Mod
 
-This Minecraft mod allows Twitch streamers to let viewers control mobs in their game through donations and/or subs (configurable), giving them mob-control for a limited (or unlimited) time to interact with the streamer in real-time. The mod integrates with Twitch to handle viewer donations and dynamically changes in-game behavior.
+This Minecraft mod allows Twitch streamers to let viewers control mobs in their game through donations and/or subs (configurable), giving them mob-control for a limited (or unlimited) time to interact with the streamer in real-time. The mod integrates with Twitch to handle viewer donations.
 
 This mod was developed as a submission for the Twitch Dev Hackathon 2024! More info: https://twitchstreamertools.devpost.com/
 
