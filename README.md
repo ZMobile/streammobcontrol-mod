@@ -11,7 +11,7 @@ This mod was developed as a submission for the Twitch Dev Hackathon 2024! More i
 architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
 fabric-api-0.92.2+1.20.1.jar (download link: https://www.curseforge.com/minecraft/mc-mods/fabric-api/files/5383715)
 identity-2.7.1-1.20.1-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/identity/files/4687497)
-streammobcontrol-1.0.0.jar (this mod)
+streammobcontrol-1.0.0.jar (this mod. Jar available in build/libs)
 
 2. Upon joining as OP, type "/streamer add <your-minecraft-username>" to add yourself and other survival participants as a streamer. This will prevent you from respawning in spectator mode on death.
 
@@ -44,6 +44,8 @@ NOTE: In order to avoid storing auth tokens, the server will require you to reau
 Upon joining, if not already authenticated, you will be prompted to authenticate your Twitch account with the server. This will allow the Minecraft server to verify which Twitch account you are affiliated with.
 
 Once you are able, right-click a mob in spectator mode to morph into it!
+
+Note: so long as the streamer has authenticated the server with their Twitch account, all bits and subs donated prior to authentication will still be counted towards your mob-time.
 
 ## All Config Commands:
 
