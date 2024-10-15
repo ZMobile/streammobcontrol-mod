@@ -6,40 +6,52 @@ This mod was developed as a submission for the Twitch Dev Hackathon 2024! More i
 
 ## Streamer Config Instructions:
 
-1. Add the following files to your servers (MC version 1.20.1) fabric mod folder:
+1. Add the following files to your Fabric 1.20.1 Minecraft server's mods folder:
 
 architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
 fabric-api-0.92.2+1.20.1.jar (download link: https://www.curseforge.com/minecraft/mc-mods/fabric-api/files/5383715)
 identity-2.7.1-1.20.1-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/identity/files/4687497)
 streammobcontrol-1.0.0.jar (this mod. Jar available in build/libs)
 
-2. Upon joining as OP, type "/streamer add <your-minecraft-username>" to add yourself and other survival participants as a streamer. This will prevent you from respawning in spectator mode on death.
+2. Install Fabric 1.20.1 for your client and add the following files to your Minecraft file's mods folder:
 
-3. Create a new twitch app in your Twitch dev console (https://dev.twitch.tv/console/apps/create). Streamers create their own app to maximize allowed authentication bandwidth.
+architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
+fabric-api-0.92.2+1.20.1.jar (download link: https://www.curseforge.com/minecraft/mc-mods/fabric-api/files/5383715)
+identity-2.7.1-1.20.1-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/identity/files/4687497)
 
-4. You can choose your own app name, make it something recognizable to your viewers as they will have to authorize it.
+3. Upon joining as OP, type "/streamer add <your-minecraft-username>" to add yourself and other survival participants as a streamer. This will prevent you from respawning in spectator mode on death.
 
-5. Set the OAuth Redirect URL to "http://localhost:8080"
+4. Create a new twitch app in your Twitch dev console (https://dev.twitch.tv/console/apps/create). Streamers create their own app to maximize allowed authentication bandwidth.
 
-6. Set the Category to "Game Integration"
+5. You can choose your own app name, make it something recognizable to your viewers as they will have to authorize it.
 
-7. Set the Client Type to "Confidential"
+6. Set the OAuth Redirect URL to "http://localhost:8080"
 
-8. Click create.
+7. Set the Category to "Game Integration"
 
-9. Copy the Client ID and, once in game, type "/settwitchapp clientId <client-id>" to set the twitch app client-id for the server.
+8. Set the Client Type to "Confidential"
 
-10. Create a client-secret, copy it, and type "/settwitchapp clientSecret <client-secret>" to set the twitch app client-secret for the server.
+9. Click create.
 
-11. Type "/authenticate streamer" to begin the process of linking your Twitch account to your Minecraft account. This will allow the server to track stream donations.
+10. Copy the Client ID and, once in game, type "/settwitchapp clientId <client-id>" to set the twitch app client-id for the server.
+
+11. Create a client-secret, copy it, and type "/settwitchapp clientSecret <client-secret>" to set the twitch app client-secret for the server.
+
+12. Type "/authenticate streamer" to begin the process of linking your Twitch account to your Minecraft account. This will allow the server to track stream donations.
 
 NOTE: In order to avoid storing auth tokens, the server will require you to reauthenticate each time you start the server. (Just step 11 is required, not the whole process.)
 
-12. Type "/run start" to begin your run. This will convert you and all other streamers to survival mode, and start the grace period timer.
+13. Type "/run start" to begin your run. This will convert you and all other streamers to survival mode, and start the grace period timer.
 
-13. Provide your server ip to your viewers and have them join the server if they wish to morph into a mob. They will be prompted to authenticate their Twitch account with the server.
+14. Provide your server ip to your viewers and have them join the server if they wish to morph into a mob. They will be prompted to authenticate their Twitch account with the server.
 
 ## Viewer instructions:
+
+(Recommended if you want to see yourself as a mob:)
+Install Fabric 1.20.1 and add the following files to your Minecraft file's mods folder:
+architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
+fabric-api-0.92.2+1.20.1.jar (download link: https://www.curseforge.com/minecraft/mc-mods/fabric-api/files/5383715)
+identity-2.7.1-1.20.1-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/identity/files/4687497)
 
 Upon joining, if not already authenticated, you will be prompted to authenticate your Twitch account with the server. This will allow the Minecraft server to verify which Twitch account you are affiliated with.
 
@@ -82,3 +94,7 @@ Note: so long as the streamer has authenticated the server with their Twitch acc
 (Coming soon) /spectatorsecondsgrantedforauthcapacityfailure <seconds> - If the viewer authentication capacity is exceeded, preventing a user from authenticating, this will add a set number of seconds a viewer can spectate for before being kicked. This will allow them to wait until the bandwidth clears up. Default: 60 seconds.
 
 (Coming soon) /punishspectatorsforintentionallyfailingtocompleteauth <true/false> - If a viewer intentionally fails to complete the authentication process, thus holding up the auth bandwidth, they will be kicked from the server and subsequently punished with increasing severity. Default: true.
+
+## To Compile (For Developers):
+
+/mvn install
