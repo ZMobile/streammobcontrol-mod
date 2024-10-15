@@ -8,7 +8,7 @@ This mod was developed as a submission for the Twitch Dev Hackathon 2024! More i
 
 1. Add the following files to your Fabric 1.20.1 Minecraft server's mods folder:
 
-(Minecraft Fabric Server Download: https://fabricmc.net/use/server/)
+(Minecraft Fabric Server download link: https://fabricmc.net/use/server/)
 
 architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
 
@@ -20,7 +20,7 @@ streammobcontrol-1.0.0.jar (this mod. Jar available in build/libs)
 
 2. Install Fabric 1.20.1 for your client and add the following files to your Minecraft file's mods folder:
 
-(Fabric Installer: https://fabricmc.net/)
+(Fabric Installer download link: https://fabricmc.net/)
 
 architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
 
