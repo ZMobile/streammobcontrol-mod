@@ -8,15 +8,24 @@ This mod was developed as a submission for the Twitch Dev Hackathon 2024! More i
 
 1. Add the following files to your Fabric 1.20.1 Minecraft server's mods folder:
 
+(Minecraft Fabric Server Download: https://fabricmc.net/use/server/)
+
 architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
+
 fabric-api-0.92.2+1.20.1.jar (download link: https://www.curseforge.com/minecraft/mc-mods/fabric-api/files/5383715)
+
 identity-2.7.1-1.20.1-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/identity/files/4687497)
+
 streammobcontrol-1.0.0.jar (this mod. Jar available in build/libs)
 
 2. Install Fabric 1.20.1 for your client and add the following files to your Minecraft file's mods folder:
 
+(Fabric Installer: https://fabricmc.net/)
+
 architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
+
 fabric-api-0.92.2+1.20.1.jar (download link: https://www.curseforge.com/minecraft/mc-mods/fabric-api/files/5383715)
+
 identity-2.7.1-1.20.1-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/identity/files/4687497)
 
 3. Upon joining as OP, type "/streamer add <your-minecraft-username>" to add yourself and other survival participants as a streamer. This will prevent you from respawning in spectator mode on death.
@@ -48,10 +57,16 @@ NOTE: In order to avoid storing auth tokens, the server will require you to reau
 ## Viewer instructions:
 
 (Recommended if you want to see yourself as a mob:)
+
 Install Fabric 1.20.1 and add the following files to your Minecraft file's mods folder:
+
 architectury-9.2.14-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/architectury-api/files/5137938)
+
 fabric-api-0.92.2+1.20.1.jar (download link: https://www.curseforge.com/minecraft/mc-mods/fabric-api/files/5383715)
+
 identity-2.7.1-1.20.1-fabric.jar (download link: https://www.curseforge.com/minecraft/mc-mods/identity/files/4687497)
+
+Server ip should be provided by the streamer.
 
 Upon joining, if not already authenticated, you will be prompted to authenticate your Twitch account with the server. This will allow the Minecraft server to verify which Twitch account you are affiliated with.
 
