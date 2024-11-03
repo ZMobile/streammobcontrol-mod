@@ -12,6 +12,7 @@ public class ModConfig  {
     private int defaultSpectatorTimeLimit;
     private int spectatorSecondsGrantedForAuthCapacityFailure;
     private boolean punishSpectatorsForIntentionallyFailingToCompleteAuth;
+    private boolean authenticateViewers;
 
     public ModConfig() {
         this.kickCycle = false;
@@ -25,6 +26,7 @@ public class ModConfig  {
         this.defaultSpectatorTimeLimit = 180;
         this.spectatorSecondsGrantedForAuthCapacityFailure = 60;
         this.punishSpectatorsForIntentionallyFailingToCompleteAuth = true;
+        this.authenticateViewers = true;
     }
 
     public boolean isKickCycle() {
@@ -113,5 +115,13 @@ public class ModConfig  {
 
     public void setPunishSpectatorsForIntentionallyFailingToCompleteAuth(boolean punishSpectatorsForIntentionallyFailingToCompleteAuth) {
         this.punishSpectatorsForIntentionallyFailingToCompleteAuth = punishSpectatorsForIntentionallyFailingToCompleteAuth;
+    }
+
+    public boolean isAuthenticateViewers() {
+        return authenticateViewers;
+    }
+
+    public void setAuthenticateViewers(boolean authenticateViewers) {
+        this.authenticateViewers = authenticateViewers;
     }
 }

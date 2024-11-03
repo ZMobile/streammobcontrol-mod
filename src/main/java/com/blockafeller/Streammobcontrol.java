@@ -124,6 +124,8 @@ public class Streammobcontrol implements ModInitializer {
 			DefaultSpectatorTimeLimitCommand.register(dispatcher);
 			SpectatorSecondsGrantedForAuthCapacityFailureCommand.register(dispatcher);
 			PunishSpectatorsForIntentionallyFailingToCompleteAuthCommand.register(dispatcher);
+
+			StreamShutdownCommand.register(dispatcher);
 		});
 		//ServerLifecycleEvents.SERVER_STARTING.register(this::setupCustomLobbyWorld);
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -155,7 +157,7 @@ public class Streammobcontrol implements ModInitializer {
 	// Event handler method
 	private void onPlayerRespawn(ServerPlayerEntity player) {
 		if (!StreamerUtil.isStreamer(player)) {
-			System.out.println("Teleporting to lobby 2");
+			MorphService.removeMorphAttributes(player);
 			//MorphService.returnPlayerToLobby(player);
 			if (ConfigManager.getConfig().isKickCycle()) {
 				player.networkHandler.disconnect(Text.literal("Kick on death is assigned in order to cycle players. Please rejoin to try again."));
@@ -170,9 +172,9 @@ public class Streammobcontrol implements ModInitializer {
 	// Event handler method
 	private void onPlayerJoin(MinecraftServer server, ServerPlayerEntity player) {
 		if (!StreamerUtil.isStreamer(player)) {
-			System.out.println("Teleporting to lobby 2");
 			MorphService.returnPlayerToLobby(server, player);
-			if (!PlayerAuthDataManager.getPlayerAuthDataMap().hasAuthData(player.getUuid())) {
+			if (!PlayerAuthDataManager.getPlayerAuthDataMap().hasAuthData(player.getUuid())
+			&& ConfigManager.getConfig().isAuthenticateViewers()) {
 				MinecraftTwitchMessengerService.sendAuthorizationOffer(player);
 			}
 			TwitchSubscriptionExpirationCheckerService.checkSubscriptions(player);
