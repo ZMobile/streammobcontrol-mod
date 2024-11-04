@@ -78,6 +78,23 @@ public class ViewerDonationData {
         this.lastDonationTimestamp = now;
     }
 
+    public synchronized void addSubscription(int tier, LocalDateTime customExpirationTime) {
+        this.isSubscribed = true;
+
+        // Update subscription tier based on the new tier
+        if (tier >= this.subscriptionTier) {
+            this.subscriptionTier = tier;
+        }
+
+        // Set custom expiration time
+        if (customExpirationTime.isAfter(LocalDateTime.now(ZoneOffset.UTC))) {
+            this.subscriptionExpirationTime = customExpirationTime;
+        }
+
+        // Update last donation timestamp (if necessary for your logic)
+        this.lastDonationTimestamp = LocalDateTime.now(ZoneOffset.UTC);
+    }
+
     public synchronized void setSubscribed(boolean subscribed) {
         this.isSubscribed = subscribed;
     }

@@ -41,6 +41,11 @@ public class TwitchStreamerAuthenticationService {
                                 }
                                 return;
                             }
+                            try {
+                                TwitchSubscriptionCheckerService.getTwitchSubscriptions(tokenData.getAccessToken(), playerAuthData.getTwitchUserId());
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
 
                             String clientSecret = ConfigManager.getConfig().getTwitchAppClientSecret();
                             TwitchPubSubClient twitchPubSubClient = new TwitchPubSubClient(serverPlayerEntity, clientId, clientSecret, tokenData, playerAuthData.getTwitchUserId());
