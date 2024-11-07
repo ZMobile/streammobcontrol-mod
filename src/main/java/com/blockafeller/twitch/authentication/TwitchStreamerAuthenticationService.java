@@ -6,6 +6,8 @@ import com.blockafeller.twitch.memory.PlayerAuthData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.net.URI;
+
 public class TwitchStreamerAuthenticationService {
     private static TwitchPubSubClient twitchPubSubClient = null;
 
@@ -27,7 +29,6 @@ public class TwitchStreamerAuthenticationService {
                 serverPlayerEntity.sendMessage(Text.literal("Failed to  initialize authorization."));
                 return;
             }
-
             MinecraftTwitchMessengerService.sendAuthorizationLink(serverPlayerEntity, twitchAuthorizationInitializationData.getUserCode());
             TwitchAccessTokenPollingService.pollForAccessToken(clientId, twitchAuthorizationInitializationData.getDeviceCode())
                     .thenAccept(tokenData -> {
@@ -47,8 +48,15 @@ public class TwitchStreamerAuthenticationService {
                                 throw new RuntimeException(e);
                             }
 
+
                             String clientSecret = ConfigManager.getConfig().getTwitchAppClientSecret();
-                            TwitchPubSubClient twitchPubSubClient = new TwitchPubSubClient(serverPlayerEntity, clientId, clientSecret, tokenData, playerAuthData.getTwitchUserId());
+                            URI uri = null;
+                            try {
+                                 uri = URI.create("wss://pubsub-edge.twitch.tv");
+                            } catch (Exception e) {
+                                e.printStackTrace();    
+                            }
+                            TwitchPubSubClient twitchPubSubClient = new TwitchPubSubClient(uri, serverPlayerEntity, clientId, clientSecret, tokenData, playerAuthData.getTwitchUserId());
                             twitchPubSubClient.connect();
                         } else {
                             serverPlayerEntity.sendMessage(Text.literal("Failed to retrieve access token."));

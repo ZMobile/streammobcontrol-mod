@@ -29,8 +29,8 @@ public class TwitchPubSubClient extends WebSocketClient {
     private Timer pingTimer;
     private long expirationTime; // To track when the token expires
 
-    public TwitchPubSubClient(ServerPlayerEntity player, String clientId, String clientSecret, TwitchTokenData tokenData, String streamerTwitchId) {
-        super(URI.create("wss://pubsub-edge.twitch.tv"));
+    public TwitchPubSubClient(URI uri, ServerPlayerEntity player, String clientId, String clientSecret, TwitchTokenData tokenData, String streamerTwitchId) {
+        super(uri);
         this.authenticatedPlayer = player;
         this.clientId = clientId;
         this.clientSecret = clientSecret;

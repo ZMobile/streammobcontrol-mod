@@ -3,6 +3,7 @@ plugins {
 	id 'maven-publish'
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "1.2-SNAPSHOT" apply false
+	//id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 allprojects {
@@ -30,6 +31,10 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 }
+
+/*shadowJar {
+	archiveClassifier.set('')
+}*/
 
 loom {
 	splitEnvironmentSourceSets()
@@ -64,6 +69,10 @@ dependencies {
 	}
 
 	modImplementation 'org.java-websocket:Java-WebSocket:1.5.7'
+	include("org.java-websocket:Java-WebSocket:1.5.7")
+	//include("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}")
+	//include("dev.architectury:architectury-fabric:${project.architectury_version}")
+	//include files('lib/identity-2.7.1-1.20.1-fabric.jar')
 }
 
 processResources {
