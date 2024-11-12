@@ -105,7 +105,7 @@ public class Streammobcontrol implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTED.register(this::setupCustomLobbyWorld);
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			ControlCommand.register(dispatcher, registryAccess);
+			//ControlCommand.register(dispatcher, registryAccess);
 			TimeCommands.register(dispatcher);
 			StreamerCommands.register(dispatcher);
 

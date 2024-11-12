@@ -3,6 +3,7 @@ package com.blockafeller.command;
 import com.blockafeller.extension.PlayerExtension;
 import com.blockafeller.morph.MorphService;
 import com.blockafeller.time.GracePeriodTimeTracker;
+import com.blockafeller.time.TimeUtils;
 import com.blockafeller.util.StreamerUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.CommandManager;
@@ -20,6 +21,7 @@ public class RunCommand {
                 .then(CommandManager.literal("start")  // Create the "start" sub-command
                         .executes(context -> {
                             // Logic for "/run start" goes here]
+                            TimeUtils.setDayTime(context.getSource().getServer());
                             GracePeriodTimeTracker.resetGracePeriodTime();
                             var playerManager = context.getSource().getServer().getPlayerManager();
 
@@ -31,6 +33,7 @@ public class RunCommand {
                             for (ServerPlayerEntity player : playerManager.getPlayerList()) {
                                 if (((PlayerExtension) player).isInhabiting()) {
                                     MorphService.reverseMorph(player);
+
                                 }
                                 if (StreamerUtil.isStreamer(player)) {
                                     // Set the player's game mode to survival

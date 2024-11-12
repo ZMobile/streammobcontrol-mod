@@ -109,6 +109,7 @@ public class MorphService {
         }
 
 
+
         if (newMob != null) {
             newMob.setHealth(originalMob.getHealth());
             newMob.setCustomName(originalMob.getCustomName());
@@ -142,7 +143,7 @@ public class MorphService {
         player.getInventory().clear();
         ((PlayerExtension) player).setInhabitedMobType(null);
         ((PlayerExtension) player).setInhabiting(false);
-
+        PlayerIdentity.updateIdentity(player, null, null);
         // Step 5: Set player to Spectator mode
         //player.changeGameMode(GameMode.SPECTATOR);
     }
